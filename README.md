@@ -21,9 +21,9 @@ For the most part, yes. Even dockable probes like the popular [Klicky Probe](htt
 # Looks awesome! How do I get started?
 ---
 ### Prerequisites:
-- You must have a version of the Klipper firmware that supports [Object Exclusion](https://www.klipper3d.org/Exclude_Object.html?h=exclude#exclude-objects), and have `[exclude_object]` defined in your `printer.cfg` file.
+- You must have a version of the Klipper firmware that supports [Object Exclusion](https://www.klipper3d.org/Exclude_Object.html?h=exclude#exclude-objects), and have `[exclude_object]` defined in your `printer.cfg` file. [^1]
 
-- Once you have `exclude_object` defined in your `printer.cfg` file, make sure you have `enable_object_processing: True` under `[file_manager]` in your `moonraker.conf` file. This will allow Klipper to process incoming gcode files for objects.
+- Once you have `exclude_object` defined in your `printer.cfg` file, make sure you have `enable_object_processing: True` under `[file_manager]` in your `moonraker.conf` file. This will allow Klipper to process incoming gcode files for objects. [^1]
 
 - You must have object labeling enabled in your slicer. (Usually in slicer output options.) <img src="./Photos/slicer-setting.png">
 
@@ -31,7 +31,7 @@ For the most part, yes. Even dockable probes like the popular [Klicky Probe](htt
 
 ### Installation:
 1. Copy the configuration files to your klipper instance and use [include] to add them to your printer's configuration.
-2. Check the macro variables at the top of each configuration file and adjust them accordingly for enabling status lights, dockable probe commands, or even mesh point fuzzing! [^1]
+2. Check the macro variables at the top of each configuration file and adjust them accordingly for enabling status lights, dockable probe commands, or even mesh point fuzzing! [^2]
 3. Double check your `PRINT_START` macro to ensure `BED_MESH_CALIBRATE` and/or `ADAPTIVE_PURGE` macros are defined.
 4. Enjoy!
 
@@ -46,4 +46,5 @@ For the most part, yes. Even dockable probes like the popular [Klicky Probe](htt
 - [KageUrufu](https://github.com/kageurufu) - For spearheading object cancellation in Klipper, and helping make this possible.
 - The Voron Helpers and Voron Contributors team, a group I feel are my close friends.
 
-[^1]: Mesh point fuzzing allows the user to fuzz mesh points to spread out possible polishing marks and wear from nozzle-based probes, like load cells or Voron Tap.
+[^1]: After making any changes to critical Klipper or Moonraker functions, be sure to use `FIRMWARE_RESTART`, as well as restart your Moonraker instance so those changes take effect.
+[^2]: Mesh point fuzzing allows the user to fuzz mesh points to spread out possible polishing marks and wear from nozzle-based probes, like load cells or Voron Tap.
