@@ -8,7 +8,10 @@ Thanks to the great work from [kageurufu](https://github.com/kageurufu) on [Excl
 
 ### Sounds interesting, what does an adaptive mesh look like?
 
-`example photos`
+<img src="./Photos/tiny-mesh-2.png" alt="Tiny Mesh" title="Tiny Mesh">
+This is an adaptive mesh for a small object labeled in the gcode around the center of the bed.
+<img src="./Photos/long-mesh-1.png" alt="Long Mesh" title="Long Mesh">
+This is an adaptive mesh of a skinny and long object labeled in the gcode.
 
 ### Does this work with any printer with a probe?
 For the most part, yes. Even dockable probes like the popular [Klicky Probe](https://github.com/jlas1/Klicky-Probe)! But, full-disclosure, there is not currently an elegant solution for properly using a [Relative Reference Index](https://www.klipper3d.org/Bed_Mesh.html?h=relative#the-relative-reference-index), but we seem to have been able to get it close enough for now. Got a solution that works great? Submit a pull request! 
@@ -30,7 +33,7 @@ For the most part, yes. Even dockable probes like the popular [Klicky Probe](htt
 
 ### Helpful tips & information:
 - For richer meshes when printing more/larger objects, increase `probe_count` in your `[bed_mesh]` configuration. We recommend at least `5,5` for a 25 point mesh, but because KAMP can adapt, and rich meshes are benefitial, a 49 point mesh maximum is encouraged, or `7,7`.
-- If you'd like to have a neat VoronDesign logo purge right before your print begins, try out the `ADAPTIVE_PURGE` macro! There's lots of neat variables that can be configured to get it perfect, every time.
+- If you'd like to have a neat VoronDesign logo purge right before your print begins, try out the `ADAPTIVE_PURGE` macro! There's lots of neat variables that can be configured to get it perfect, every time. <img src="./Photos/voron-purge-example.png">
 - If you absolutely must have a perfect implementation of [Relative Reference Index](https://www.klipper3d.org/Bed_Mesh.html?h=relative#the-relative-reference-index), a workaround can be used by combining KAMP with [Automatic Z Calibration](https://github.com/protoloft/klipper_z_calibration).
 
 # Honorable Mentions and Amazing Contributors:
