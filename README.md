@@ -22,7 +22,8 @@ For the most part, yes. Even dockable probes like the popular [Klicky Probe](htt
 ---
 ### Prerequisites:
 - You must have a version of the Klipper firmware that supports [Object Exclusion](https://www.klipper3d.org/Exclude_Object.html?h=exclude#exclude-objects), and have `[exclude_object]` defined in your `printer.cfg` file.
-- You must have objects labeling enabled in your slicer. (Usually in slicer output options.)
+- You must have object labeling enabled in your slicer. (Usually in slicer output options.) <img src="./Photos/slicer-setting.png">
+
 - If you are using a `BED_MESH_CALIBRATE` macro override, you must `#comment` it out or ~~remove it.~~ But don't worry, we thought ahead and have made it easy to define macros that attach and remove a probe, like the Klicky, Euclid, and other **dockable** probes.
 
 ### Installation:
