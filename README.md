@@ -22,6 +22,9 @@ For the most part, yes. Even dockable probes like the popular [Klicky Probe](htt
 ---
 ### Prerequisites:
 - You must have a version of the Klipper firmware that supports [Object Exclusion](https://www.klipper3d.org/Exclude_Object.html?h=exclude#exclude-objects), and have `[exclude_object]` defined in your `printer.cfg` file.
+
+- Once you have `exclude_object` defined in your `printer.cfg` file, make sure you have `enable_object_processing: True` under `file_manager` in your `moonraker.conf` file. This will allow Klipper to process incoming gcode files for objects.
+
 - You must have object labeling enabled in your slicer. (Usually in slicer output options.) <img src="./Photos/slicer-setting.png">
 
 - If you are using a `BED_MESH_CALIBRATE` macro override, you must `#comment` it out or ~~remove it.~~ Don't worry, we thought ahead and made it easy to define macros that attach and remove a probe, like for Klicky, Euclid, and other **dockable** probes.
