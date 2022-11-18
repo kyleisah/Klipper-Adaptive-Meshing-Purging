@@ -4,7 +4,7 @@
 ### What is it?
 KAMP is a project that was created to simplify the usage of adaptive meshing on Klipper-based 3D printers. Adaptive meshing is the practice of parsing values from a gcode file to define a mesh's dimensions. This gives you the benefits of using a bed mesh, but only *specifically* where it is needed!
 ### How does it work?
-Thanks to the great work from [kageurufu](https://github.com/kageurufu) on [Exclude_Object] in the Klipper firmware, we are able to easily work out a bed mesh's `min` and `max` values by pulling out a sliced objects size and clamp that size to a bed mesh. Imagine making a bed mesh, but the size of a Benchy! Multiple objects in gcode are parsed the same way, so the mesh density can adapt to any number of objects, as long as they fit on your buildplate. We can also use these values for localized [purge lines](), purging near the print. No more long romantic walks from the corner of the buildplate to the first extruded line.
+Thanks to the great work from [kageurufu](https://github.com/kageurufu) on [Exclude_Object] in the Klipper firmware, we are able to easily work out a bed mesh's `min` and `max` values by pulling out a sliced objects size and clamp that size to a bed mesh. Imagine making a bed mesh, but the size of a Benchy! Multiple objects in gcode are parsed the same way, so the mesh density can adapt to any number of objects, as long as they fit on your buildplate. We can also use these values for localized [purge lines](./Configuration/Adaptive_Meshing.cfg), purging near the print. No more long romantic walks from the corner of the buildplate to the first extruded line.
 
 ### Sounds interesting, what does an adaptive mesh look like?
 
