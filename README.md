@@ -75,6 +75,18 @@ Relative Reference Index is a method used in the Klipper firmware to calculate m
 >```
 
 - Try out the `ADAPTIVE_PURGE` macro and sign your work with a neat VoronDesign logo purge right before your print begins! There's lots of neat variables that can be configured to get it perfect, every time. <img src="./Photos/voron-purge-example.png"> 
+  
+# Troubleshooting:
+##### Error:
+>`0 points, clamping to bed mesh [(X_Value,Y_Value) (X_Value,Y_Value)]`
+
+This error is caused by `BED_MESH_CALIBRATE` or `PRINT_START` being called in your gcode file before `EXCLUDE_OBJECT_DEFINE` is. This is something you slicer may be doing. Currently, `exclude_object` injects the object definition code after the first line of gcode it sees. This is being worked on and will be fixed as soon as the PR is merged into Moonraker.
+##### Solution:
+In the mean time, you can add a gcode command in your slicer's start gcode section before `PRINT_START` is called and that will fix the issue. `M117` is a good one to use, it'll just clear the display's current message. 
+
+<img src="./Photos/0-points-fix.png">
+
+Here `M117` has been added to the Slicer's Start gcode.
 
 # Honorable Mentions and Amazing Contributors:
 - [MapleLeafMakers](https://github.com/MapleLeafMakers) - for assisting in the inception of the project.
