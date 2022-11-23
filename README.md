@@ -20,7 +20,9 @@ Thanks to the great work from [kageurufu](https://github.com/kageurufu) on `[exc
 ### Does this work with any printer with a probe?
 As long as the printer is running a recent version of Klipper, and has a probe, ``KAMP`` is ready to serve you.
 
-Use caution with inductive probes and beds with powerful magnets, though.
+##### Use caution with inductive probes and beds with powerful magnets, though. Also, if you have Klipper excluding areas of your bed mesh using [Faulty Regions](https://www.klipper3d.org/Bed_Mesh.html#faulty-regions), you will need to `#comment` out or ~~remove~~ that configuration to use `KAMP`.
+
+If you have a workaround that makes [Faulty Regions](https://www.klipper3d.org/Bed_Mesh.html#faulty-regions) compatible, please submit a pull request! :smile:
 
 #### ⚠️ A note on the usage of a [Relative Reference Index](https://www.klipper3d.org/Bed_Mesh.html?h=relative#the-relative-reference-index):
 Relative Reference Index is a method used in the Klipper firmware to calculate mesh points for printers that have a probe, as well as a physical Z endstop, like the ones commonly found on Voron printers. Normally, when using Relative Reference Index, the mesh point closest to the Z endstop or the center of the bed is defined, and that point becomes `Z0.0` in the mesh, and all other points are scaled in Z from that point. This is normally fine when the mesh can't move around, as that point will remain consistent. We've gotten ``KAMP`` to change that value depending on the size of the mesh that is adaptively generated, but current Klipper limitations do not allow us to use that value and home the Z axis to it, setting that point in the mesh to `Z0.0`. What this means for Relative Reference Index users, typically, is your mesh may *appear* strange, but should work as intended. If you've got a creative solution that works, feel free to submit a Pull Request and contribute to the project!
@@ -34,6 +36,7 @@ Relative Reference Index is a method used in the Klipper firmware to calculate m
 >Printer.cfg
 >```jinja
 >[exclude_object]
+>...
 >```
 
 - Once you have `exclude_object` defined in your `printer.cfg` file, make sure you have `enable_object_processing: True` under `[file_manager]` in your `moonraker.conf` file. This will allow Klipper to process incoming gcode files for objects. [^1]
@@ -41,17 +44,29 @@ Relative Reference Index is a method used in the Klipper firmware to calculate m
 >```jinja
 >[file_manager]
 >enable_object_processing: True
+>...
 >```
 
 - You must have object labeling enabled in your slicer. (Usually in slicer output options.) 
 <img src="./Photos/slicer-setting.png">
 
-- If you are using a `BED_MESH_CALIBRATE` macro override for probe attachment routines, you must `#comment` it out or ~~remove it.~~ Don't worry, we thought ahead and made it easy to define macros that attach and remove a probe, like for Klicky, Euclid, and other **dockable** probes.
->Adaptive_Mesh.cfg:
+- If you are using a `BED_MESH_CALIBRATE` macro override ***for probe attachment routines***, you must `#comment` it out or ~~remove it.~~ Don't worry, we thought ahead and made it easy to define macros that attach and remove a probe, like for Klicky, Euclid, and other **dockable** probes.
+- Example:
+>klicky-probe.cfg
+>
+>Simply add a # before the [include ./klicky-bed-mesh-calibrate.cfg] to disable it.
 >```jinja
->variable_probe_dock_enable: True
+>
+>...
+>#[include ./klicky-bed-mesh-calibrate.cfg]
+>...
+>```
+>And update the variables in Adaptive_Mesh.cfg:
+>```jinja
+>variable_probe_dock_enable: True       # Normally False, enable with True if you have a dockable probe.
 >variable_attach_macro: 'Attach_Probe'  # The macro you use to attach the dockable probe.
 >variable_detach_macro: 'Dock_Probe'    # The macro you use to dock the dockable probe.
+>...
 >```
 
 ### Installation:
@@ -60,6 +75,7 @@ Relative Reference Index is a method used in the Klipper firmware to calculate m
 >```jinja
 >[include Adaptive_Mesh.cfg]
 >[include Adaptive_Purge.cfg]
+>...
 >```
 
 2. Check the macro variables at the top of each configuration file and adjust them accordingly for enabling status lights, dockable probe commands, or even mesh point fuzzing! [^2]
@@ -71,11 +87,13 @@ Relative Reference Index is a method used in the Klipper firmware to calculate m
 >Printer.cfg
 >```jinja
 >[bed_mesh]
+>...
 >probe_count: 7,7
+>...
 >```
 
 - Try out the `ADAPTIVE_PURGE` macro and sign your work with a neat VoronDesign logo purge right before your print begins! There's lots of neat variables that can be configured to get it perfect, every time. <img src="./Photos/voron-purge-example.png"> 
-  
+---
 # Troubleshooting:
 ##### Error:
 >`0 points, clamping to bed mesh [(X_Value,Y_Value) (X_Value,Y_Value)]`
@@ -88,6 +106,19 @@ In the mean time, you can add a gcode command in your slicer's start gcode secti
 
 Here `M117` has been added to the Slicer's Start gcode.
 
+---
+
+##### Error:
+>`Move exceeds maximum extrusion (X.Xmm^2 vs X.Xmm^2)`
+##### Solution:
+This happens when an extrusion move exceeds Klipper's `max_extrude_cross_section` value. You typically need to increase this value to get a small and effective purge to work. We recommend setting this value to `5` to allow purging, but still protect your extruder if something else is wrong.
+>```jinja
+>[extruder]
+>...
+>max_extrude_cross_section: 5
+>...
+>```
+---
 # Honorable Mentions and Amazing Contributors:
 - [MapleLeafMakers](https://github.com/MapleLeafMakers) - for assisting in the inception of the project.
 - [Julian Schill](https://github.com/julianschill) - A true code warrior and jinja ninja.
