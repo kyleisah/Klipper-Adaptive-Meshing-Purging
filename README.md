@@ -4,7 +4,7 @@
 ### What is it?
 ``KAMP`` is a project that was created to simplify the usage of adaptive meshing on Klipper-based 3D printers. Adaptive meshing is the practice of parsing values from a gcode file to define a mesh's dimensions. This gives you the benefits of using a bed mesh, but only *specifically* where it is needed, without passing a bunch of variables around. ``KAMP`` was designed with simplicity in mind!
 ### Why do I want this?
-The use of bed meshes is considered [cheap insurance](https://github.com/AndrewEllis93/Print-Tuning-Guide/blob/main/articles/troubleshooting/first_layer_squish_consistency.md#first-layer-consistency) by the great [Andrew Ellis](https://github.com/AndrewEllis93) in his very popular [Print Tuning Guide](https://github.com/AndrewEllis93/Print-Tuning-Guide). While I completely agree, I also believe in efficiency. Building a bed mesh can take a bit of time, and what's worse, a lot of it will be wasted because the mesh is not the same size as the build area being **used**, until now! Adaptive meshing will not only waste much less time and effort building bed meshes, it will make your meshes more **effective** by building a richer bed mesh tailored to the area you are *actually* using when you print. Imagine the *perfection* your first layer can become because almost no information is wasted in your bed mesh!
+The use of bed meshes is considered [cheap insurance](https://github.com/AndrewEllis93/Print-Tuning-Guide/blob/main/articles/troubleshooting/first_layer_squish_consistency.md#first-layer-consistency) by the great [Andrew Ellis](https://github.com/AndrewEllis93) in his very popular [Print Tuning Guide](https://github.com/AndrewEllis93/Print-Tuning-Guide). While I completely agree, I also believe in efficiency. Building a bed mesh can take a bit of time, and what's worse, a lot of it will be wasted because the mesh is not the same size as the build area *being used*, until now! Adaptive meshing will not only waste much less time and effort building bed meshes, it will make your meshes more **effective** by building a richer bed mesh tailored to the area you are *actually* using when you print. Imagine the *perfection* your first layer can become because almost no information is wasted in your bed mesh!
 ### How does it work?
 Thanks to the great work from [kageurufu](https://github.com/kageurufu) on `[exclude_object]` in the Klipper firmware, we are able to easily work out a bed mesh's `min` and `max` values by pulling out a sliced object's size and clamp that size to a bed mesh. Imagine making a bed mesh, but the size of a Benchy! Multiple objects in gcode are parsed the same way, so the mesh density can adapt to any number of objects, as long as they fit on your buildplate. We can also use these values for localized [purge lines](./Configuration/Adaptive_Purge.cfg), purging near the print. No more long romantic walks from the corner of the buildplate to the first extruded line.
 
@@ -84,21 +84,18 @@ Relative Reference Index is a method used in the Klipper firmware to calculate m
 
 ### Helpful tips & information:
 - For richer meshes when printing more/larger objects, increase `probe_count` in your `[bed_mesh]` configuration. We recommend at least `5,5` for a 25-point mesh, but because `KAMP` can adapt (and rich meshes are beneficial), a 49-point mesh maximum is encouraged, or `7,7`.
->Printer.cfg
->```jinja
->[bed_mesh]
->...
->probe_count: 7,7
->...
->```
 
-- Try out the `ADAPTIVE_PURGE` macro and sign your work with a neat VoronDesign logo purge right before your print begins! There's lots of neat variables that can be configured to get it perfect, every time. <img src="./Photos/voron-purge-example.png"> 
+- If you don't have a good `PRINT_START` macro to use, check out some of the excellent work my good friend [Jontek2](https://github.com/jontek2/A-better-print_start-macro) has done for a simple and powerful `PRINT_START` configuration for Voron printers!
+
+- Try out the `ADAPTIVE_PURGE` macro and sign your work with a neat VoronDesign logo purge right before your print begins! There's lots of neat variables that can be configured to get it perfect, every time. 
+
+<img src="./Photos/voron-purge-example.png" width="65%"> 
 ---
 # Troubleshooting:
 ##### Error:
 >`0 points, clamping to bed mesh [(X_Value,Y_Value) (X_Value,Y_Value)]`
 
-This error is caused by `BED_MESH_CALIBRATE` or `PRINT_START` being called in your gcode file before `EXCLUDE_OBJECT_DEFINE` is. This is something you slicer may be doing. Currently, `exclude_object` injects the object definition code after the first line of gcode it sees. This is being worked on and will be fixed as soon as the PR is merged into Moonraker.
+This error is caused by `BED_MESH_CALIBRATE` or `PRINT_START` being called in your gcode file **before** `EXCLUDE_OBJECT_DEFINE` is. This is something you slicer may be doing. Currently, `exclude_object` injects the object definition code after the first line of gcode it sees. This is being worked on and will be fixed as soon as the PR is merged into Moonraker.
 ##### Solution:
 In the mean time, you can add a gcode command in your slicer's start gcode section before `PRINT_START` is called and that will fix the issue. `M117` is a good one to use, it'll just clear the display's current message. 
 
