@@ -90,7 +90,9 @@ Relative Reference Index is a method used in the Klipper firmware to calculate m
 - Try out the `ADAPTIVE_PURGE` macro and sign your work with a neat VoronDesign logo purge right before your print begins! There's lots of neat variables that can be configured to get it perfect, every time. 
 
 <img src="./Photos/voron-purge-example.png" width="65%"> 
+
 ---
+
 # Troubleshooting:
 ##### Error:
 >`0 points, clamping to bed mesh [(X_Value,Y_Value) (X_Value,Y_Value)]`
