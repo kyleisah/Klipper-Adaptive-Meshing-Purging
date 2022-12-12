@@ -10,12 +10,12 @@ Thanks to the great work from [kageurufu](https://github.com/kageurufu) on `[exc
 
 ### Sounds interesting, what does an adaptive mesh look like?
 #### Well, for clarity, let's look at a normal 7x7 mesh:
-- <img src="./Photos/7x7-richness.png" alt="Default Mesh" title="Default Mesh">
+- <img src="./Photos/7x7-richness.png" width="50%">
 - This is a normal 7x7 mesh. If I were printing just a couple small objects, or one large object, or a plate full of parts, this is what a machine will normally make.
 #### Now, here's what an adaptive mesh looks like:
-- <img src="./Photos/3x3-richness.png" alt="3x3 Mesh" title="3x3 Mesh">
+- <img src="./Photos/3x3-richness.png" width="50%">
 - This is an adaptive mesh for a small object near the origin of the bed. Despite the fact that the object is only 20mm^2^, a 3x3 mesh was still created, making this mesh **extremely** dense, which will result in an even better first layer.
-- <img src="./Photos/7x4-richness.png" alt="7x4 Mesh" title="7x4 Mesh">
+- <img src="./Photos/7x4-richness.png" width="50%">
 - This is an adaptive mesh for a skinny and long object at the back of the bed, 200mm x 10mm in size. While the object is rather small, ``KAMP`` made a mesh that is 7x4, almost *exactly* the size of the object, and **packed** with information.
 ### Does this work with any printer with a probe?
 As long as the printer is running a recent version of Klipper, and has a probe, ``KAMP`` is ready to serve you.
@@ -48,7 +48,7 @@ Relative Reference Index is a method used in the Klipper firmware to calculate m
 >```
 
 - You must have object labeling enabled in your slicer. (Usually in slicer output options.) 
-<img src="./Photos/slicer-setting.png">
+<img src="./Photos/slicer-setting.png" width="50%">
 
 - If you are using a `BED_MESH_CALIBRATE` macro override ***for probe attachment routines***, you must `#comment` it out or ~~remove it.~~ Don't worry, we thought ahead and made it easy to define macros that attach and remove a probe, like for Klicky, Euclid, and other **dockable** probes.
 - Example:
@@ -89,7 +89,7 @@ Relative Reference Index is a method used in the Klipper firmware to calculate m
 
 - Try out the `ADAPTIVE_PURGE` macro and sign your work with a neat VoronDesign logo purge right before your print begins! There's lots of neat variables that can be configured to get it perfect, every time. 
 
-<img src="./Photos/voron-purge-example.png" width="65%"> 
+<img src="./Photos/voron-purge-example.png" width="50%"> 
 
 ---
 
@@ -101,7 +101,7 @@ This error is caused by `BED_MESH_CALIBRATE` or `PRINT_START` being called in yo
 ##### Solution:
 In the mean time, you can add a gcode command in your slicer's start gcode section before `PRINT_START` is called and that will fix the issue. `M117` is a good one to use, it'll just clear the display's current message. 
 
-<img src="./Photos/0-points-fix.png">
+<img src="./Photos/0-points-fix.png" width="50%">
 
 Here `M117` has been added to the Slicer's Start gcode.
 
