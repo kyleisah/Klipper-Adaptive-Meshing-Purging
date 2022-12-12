@@ -86,7 +86,7 @@ Relative Reference Index is a method used in the Klipper firmware to calculate m
 - You must have object labeling enabled in your slicer. (Usually in slicer output options.)
 
 <p align=center>
-    <img src="./Photos/slicer-setting.png" width="50%">
+    <img src="./Photos/slicer-setting.png">
 </p>
 
 <details>
@@ -158,32 +158,35 @@ And update the variables in Adaptive_Mesh.cfg:
 <!-- Troubleshooting -->
 
 # Troubleshooting:
->##### Error:
->`0 points, clamping to bed mesh [(X_Value,Y_Value) (X_Value,Y_Value)]`
->>This error is caused by `BED_MESH_CALIBRATE` or `PRINT_START` being called in your gcode file **before** `EXCLUDE_OBJECT_DEFINE` is. This is something you slicer may be doing. Currently, `exclude_object` injects the object definition code after the first line of gcode it sees. This is being worked on and will be fixed as soon as the PR is merged into Moonraker.
->##### Solution:
->>In the mean time, you can add a gcode command in your slicer's start gcode section before `PRINT_START` is called and that will fix the issue. `M117` is a good one to use, it'll just clear the display's current message. 
->>
->><p align=center>
-    >><img src="./Photos/0-points-fix.png" width="50%">
->></p>
->>
->><p align=center>
-    >>Here, M117 has been added to the Slicer's Start gcode. 
->></p>
+##### Error:
+`0 points, clamping to bed mesh [(X_Value,Y_Value) (X_Value,Y_Value)]`
+>This error is caused by `BED_MESH_CALIBRATE` or `PRINT_START` being called in your gcode file **before** `EXCLUDE_OBJECT_DEFINE` is. This is something you slicer may be doing. Currently, `exclude_object` injects the object definition code after the first line of gcode it sees. This is being worked on and will be fixed as soon as the PR is merged into Moonraker.
+##### Solution:
+>In the mean time, you can add a gcode command in your slicer's start gcode section before `PRINT_START` is called and that will fix the issue. `M117` is a good one to use, it'll just clear the display's current message. 
+>
+><p align=center>
+><img src="./Photos/0-points-fix.png" width="50%">
+></p>
+>
+><p align=center>
+>Here, M117 has been added to the Slicer's Start gcode. 
+></p>
 
->##### Error:
->>`Move exceeds maximum extrusion (X.Xmm^2 vs X.Xmm^2)`
->##### Solution:
->>This happens when an extrusion move exceeds Klipper's `max_extrude_cross_section` value. You typically need to increase this value to get a small and effective purge to work. We recommend setting this value to `5` to allow purging, but still protect your extruder if something else is wrong.
->>
->>Example:
->>```ruby
->>[extruder]
->>...
->>max_extrude_cross_section: 5
->>...
->>```
+<p>
+</p>
+
+##### Error:
+`Move exceeds maximum extrusion (X.Xmm^2 vs X.Xmm^2)`
+##### Solution:
+>This happens when an extrusion move exceeds Klipper's `max_extrude_cross_section` value. You typically need to increase this value to get a small and effective purge to work. We recommend setting this value to `5` to allow purging, but still protect your extruder if something else is wrong.
+>
+>Example:
+>```ruby
+>[extruder]
+>...
+>max_extrude_cross_section: 5
+>...
+>```
 
 ---
 
