@@ -78,16 +78,18 @@ Thanks to the great work from [kageurufu](https://github.com/kageurufu) on `[exc
 </p>
 
 Well, for clarity, let's look at a normal 7x7 mesh:
-<img src="./Photos/KAMP-Assets/Meshing-Assets/7x7-richness.png" width="50%">
+    
+<img src="./Photos/KAMP-Assets/Meshing-Assets/7x7-richness.png" width="25%">
 
 This is a normal 7x7 mesh. If I were printing just a couple small objects, or one large object, or a plate full of parts, this is what a machine will **normally** make.
 
 Now, here's what an adaptive mesh looks like:
-<img src="./Photos/KAMP-Assets/Meshing-Assets/3x3-richness.png" width="50%">
+    
+<img src="./Photos/KAMP-Assets/Meshing-Assets/3x3-richness.png" width="25%">
 
 This is an adaptive mesh for a small object near the origin of the bed. Despite the fact that the object is only 20mm^2^, a 3x3 mesh was still created, making this mesh **extremely** dense, which will result in an even better first layer.
 
-<img src="./Photos/KAMP-Assets/Meshing-Assets/7x4-richness.png" width="50%">
+<img src="./Photos/KAMP-Assets/Meshing-Assets/7x4-richness.png" width="25%">
 
 This is an adaptive mesh for a skinny and long object at the back of the bed, 200mm x 10mm in size. While the object is rather small, ``KAMP`` made a mesh that is 7x4, almost *exactly* the size of the object, and **packed** with information.
 
@@ -266,5 +268,4 @@ Solution:
 <br>
 
 [^1]: After making any changes to critical Klipper or Moonraker functions, be sure to use `FIRMWARE_RESTART`, as well as restart your Moonraker instance so those changes take effect.
-
 [^2]: Mesh point fuzzing allows the user to fuzz mesh points to spread out possible polishing marks and wear from nozzle-based probes, like load cells or Voron Tap.
