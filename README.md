@@ -114,7 +114,7 @@ Relative Reference Index is a method used in the Klipper firmware to calculate m
 <br> 
 
 ## Setup
----
+
 <br>
 
 ### I have a dockable probe like [Klicky](https://github.com/jlas1/Klicky-Probe) or [Euclid](https://github.com/nionio6915/Euclid_Probe):
