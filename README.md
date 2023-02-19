@@ -1,52 +1,100 @@
-<!-- Header / Top of Page -->
+<!-- KAMP Logo/Banner -->
 
-## Klipper Adaptive Meshing and Purging
-#### A uniquely simple adaptive meshing solution for Klipper-enabled 3D printers!
+<p align=center>
+    <img src="./Photos/KAMP-Assets/Logo/KAMP-for-dark-BG.png" width=500px>
+</p>
+
+<p align=center>
+    <b>
+        Welcome to Klipper Adaptive Meshing and Purging, or KAMP!
+    </b>
+<br>
+</br>
+</p>
+
 ---
 
-<!-- What is it? -->
+<!-- Table of Contents -->
 
-#### What is it?
-``KAMP`` is a project that was created to simplify the usage of adaptive meshing on Klipper-based 3D printers. Adaptive meshing is the practice of parsing values from a gcode file to define a mesh's dimensions. This gives you the benefits of using a bed mesh, but only *specifically* where it is needed, without passing a bunch of variables around. ``KAMP`` was designed with simplicity in mind!
+<br>
+</br>
+<b>
+    Table of Contents:
+</b>
 
-<!-- Why do I want this? -->
+- [Adaptive Meshing](#adaptive-meshing)
+  - [Introduction](#introduction)
+    - [What is it?](#what-is-it)
+    - [Why do I want this?](#why-do-i-want-this)
+    - [How does it work?](#how-does-it-work)
+  - [Setup](#setup)
+    - [I have a dockable probe like Klicky or Euclid:](#i-have-a-dockable-probe-like-klicky-or-euclid)
+    - [I've configured my probe already, or my probe is integrated:](#ive-configured-my-probe-already-or-my-probe-is-integrated)
+    - [I prefer using Moonraker's update manager:](#i-prefer-using-moonrakers-update-manager)
+  - [Troubleshooting](#troubleshooting)
+- [Adaptive Purging](#adaptive-purging)
+  - [Introduction](#introduction-1)
+  - [Setup - Adaptive Purging](#setup---adaptive-purging)
+- [Special Thanks](#special-thanks)
 
+<br>
 
-#### Why do I want this?
+<!-- Adaptive Meshing Section -->
+
+# Adaptive Meshing
+
+<br>
+
+## Introduction
+
+<br>
+
+### What is it?
+
+``KAMP`` is a project that was created to simplify the usage of adaptive meshing on Klipper-based 3D printers. Adaptive meshing is the practice of using values from a gcode file to define a mesh's dimensions. This gives you the benefits of using a bed mesh, but only *specifically* where it is needed, without passing a bunch of variables around. ``KAMP`` was designed with simplicity in mind!
+
+<br>
+
+### Why do I want this?
+
 The use of bed meshes is considered [cheap insurance](https://github.com/AndrewEllis93/Print-Tuning-Guide/blob/main/articles/troubleshooting/first_layer_squish_consistency.md#first-layer-consistency) by the great [Andrew Ellis](https://github.com/AndrewEllis93) in his very popular [Print Tuning Guide](https://github.com/AndrewEllis93/Print-Tuning-Guide). While I completely agree, I also believe in efficiency. Building a bed mesh can take a bit of time, and what's worse, a lot of it will be wasted because the mesh is not the same size as the build area *being used*, until now! Adaptive meshing will not only waste much less time and effort building bed meshes, it will make your meshes more **effective** by building a richer bed mesh tailored to the area you are *actually* using when you print. Imagine the *perfection* your first layer can become because almost no information is wasted in your bed mesh!
 
-<!-- How does it work? -->
+<br>
 
-#### How does it work?
-Thanks to the great work from [kageurufu](https://github.com/kageurufu) on `[exclude_object]` in the Klipper firmware, we are able to easily work out a bed mesh's `min` and `max` values by pulling out a sliced object's size and clamp that size to a bed mesh. Imagine making a bed mesh, but the size of a Benchy! Multiple objects in gcode are parsed the same way, so the mesh density can adapt to any number of objects, as long as they fit on your buildplate. We can also use these values for localized [purge lines](./Configuration/Adaptive_Purge.cfg), purging near the print. No more long romantic walks from the corner of the buildplate to the first extruded line.
+### How does it work?
 
-<!-- Adaptive mesh explanation -->
+Thanks to the great work from [kageurufu](https://github.com/kageurufu) on `[exclude_object]` in the Klipper firmware, we are able to easily work out a bed mesh's `min` and `max` values by pulling out a sliced object's size and clamp that size to a bed mesh. Imagine making a bed mesh, but the size of a Benchy! Multiple objects in gcode are parsed the same way, so the mesh density can adapt to any number of objects, as long as they fit on your buildplate. We can also use these values for localized [purge lines](./Configuration/Adaptive_Purge.cfg), purging near the print. No more long romantic walks from the corner of the buildplate to the first extruded line!
 
->#### Sounds interesting, what does an adaptive mesh look like?
->>##### Well, for clarity, let's look at a normal 7x7 mesh:
->><img src="./Photos/7x7-richness.png" width="50%">
->>
->>This is a normal 7x7 mesh. If I were printing just a couple small objects, or one large object, or a plate full of parts, this is what a machine will normally make.
->##### Now, here's what an adaptive mesh looks like:
->><img src="./Photos/3x3-richness.png" width="50%">
->>
->>This is an adaptive mesh for a small object near the origin of the bed. Despite the fact that the object is only 20mm^2^, a 3x3 mesh was still created, making this mesh **extremely** dense, which will result in an even better first layer.
->>
->><img src="./Photos/7x4-richness.png" width="50%">
->>
->>This is an adaptive mesh for a skinny and long object at the back of the bed, 200mm x 10mm in size. While the object is rather small, ``KAMP`` made a mesh that is 7x4, almost *exactly* the size of the object, and **packed** with information.
+<br>
 
-<!-- Does this work with any printer with a probe? -->
+<details>
+    <summary>
+        <b>
+        What does an adaptive mesh look like?   
+        </b>
+    </summary>
+<p>
+</p>
 
-#### Does this work with any printer with a probe?
-As long as the printer is running a recent version of Klipper, and has a probe, ``KAMP`` is ready to serve you.
+Well, for clarity, let's look at a normal 7x7 mesh:
+    
+<img src="./Photos/KAMP-Assets/Meshing-Assets/7x7-richness.png" width="25%">
 
-***Use caution with inductive probes and beds with powerful magnets, though. Also, if you have Klipper excluding areas of your bed mesh using [Faulty Regions](https://www.klipper3d.org/Bed_Mesh.html#faulty-regions), you will need to `#comment` out or ~~remove~~ that configuration to use `KAMP`.***
+This is a normal 7x7 mesh. If I were printing just a couple small objects, or one large object, or a plate full of parts, this is what a machine will **normally** make.
 
-If you have a workaround that makes [Faulty Regions](https://www.klipper3d.org/Bed_Mesh.html#faulty-regions) compatible, please submit a pull request! :smile:
+Now, here's what an adaptive mesh looks like:
+    
+<img src="./Photos/KAMP-Assets/Meshing-Assets/3x3-richness.png" width="25%">
 
+This is an adaptive mesh for a small object near the origin of the bed. Despite the fact that the object is only 20mm^2^, a 3x3 mesh was still created, making this mesh **extremely** dense, which will result in an even better first layer.
 
-<!-- Note on Relative Reference Index -->
+<img src="./Photos/KAMP-Assets/Meshing-Assets/7x4-richness.png" width="25%">
+
+This is an adaptive mesh for a skinny and long object at the back of the bed, 200mm x 10mm in size. While the object is rather small, ``KAMP`` made a mesh that is 7x4, almost *exactly* the size of the object, and **packed** with information.
+
+</details>
+
+<br>
 
 <details>
     <summary>
@@ -62,141 +110,211 @@ Relative Reference Index is a method used in the Klipper firmware to calculate m
 
 </details>
 
-<!-- Getting Started -->
+<br> 
 
-#### Looks awesome! How do I get started?
+## Setup
 
-##### Prerequisites:
-- You must have a version of the Klipper firmware that supports [Object Exclusion](https://www.klipper3d.org/Exclude_Object.html?h=exclude#exclude-objects), and have `[exclude_object]` defined in your `printer.cfg` file. [^1]
->Printer.cfg
->>```ruby
->>[exclude_object]
->>...
->>```
+<br>
 
-- Once you have `exclude_object` defined in your `printer.cfg` file, make sure you have `enable_object_processing: True` under `[file_manager]` in your `moonraker.conf` file. This will allow Klipper to process incoming gcode files for objects. [^1]
->Moonraker.conf
->>```ruby
->>[file_manager]
->>enable_object_processing: True
->>...
->>```
-
-
-- You must have object labeling enabled in your slicer. (Usually in slicer output options.)
-
-<p align=center>
-    <img src="./Photos/slicer-setting.png">
-</p>
+### I have a dockable probe like [Klicky](https://github.com/jlas1/Klicky-Probe) or [Euclid](https://github.com/nionio6915/Euclid_Probe):
 
 <details>
     <summary>
         <b>
-        ⚠️ Expand me if you use a dockable probe like Klicky or Euclid:    
+        Expand this section:
         </b>
     </summary>
 <p>
 </p>
 
-If you are using a `BED_MESH_CALIBRATE` macro override *for probe attachment routines*, you must `#comment` it out or ~~remove it.~~ Don't worry, we thought ahead and made it easy to define macros that attach and remove a probe, like for Klicky, Euclid, and other **dockable** probes.
->
->klicky-probe.cfg
->>
->>Simply add a `#` before the [include ./klicky-bed-mesh-calibrate.cfg] to disable it.
->>
->>```ruby
->>
->>...
->>#[include ./klicky-bed-mesh-calibrate.cfg]
->>...
->>```
+- If you are using a `BED_MESH_CALIBRATE` macro override *for probe attachment routines*, you must `#comment` it out or ~~remove it.~~ Don't worry, we thought ahead and made it easy to define macros that attach and remove a probe, like for [Klicky](https://github.com/jlas1/Klicky-Probe), [Euclid](https://github.com/nionio6915/Euclid_Probe), and other dockable probes.
 
-And update the variables in Adaptive_Mesh.cfg:
-
->>```ruby
->>variable_probe_dock_enable: True       # Normally False, enable with True if you have a dockable probe.
->>variable_attach_macro: 'Attach_Probe'  # The macro you use to attach the dockable probe.
->>variable_detach_macro: 'Dock_Probe'    # The macro you use to dock the dockable probe.
->>...
->>```
-
-</details>
-
-<!-- Installation -->
-
-### Installation:
-1. Copy the configuration files to your klipper instance and use [include] to add them to your printer's configuration like this:
-
-    >Printer.cfg
-    >>```ruby
-    >>[include Adaptive_Mesh.cfg]
-    >>[include Adaptive_Purge.cfg]
+    >
+    >klicky-probe.cfg
+    >>
+    >>Simply add a `#` before the [include ./klicky-bed-mesh-calibrate.cfg] to disable it.
+    >>
+    >>```jinja
+    >>
+    >>...
+    >>#[include ./klicky-bed-mesh-calibrate.cfg]
     >>...
     >>```
-2. Check the macro variables at the top of each configuration file and adjust them accordingly. With them, you can enable status lights, use dockable probe commands, or even allow mesh point fuzzing! [^2]  
-3. Double check your `PRINT_START` macro to ensure `BED_MESH_CALIBRATE` and/or `ADAPTIVE_PURGE` macros are defined.  
-4. Enjoy!
 
-<!-- Tips & Info -->
+- And update the variables in Adaptive_Mesh.cfg:
 
-### Helpful tips & information:
-- For richer meshes when printing more/larger objects, increase `probe_count` in your `[bed_mesh]` configuration. We recommend at least `5,5` for a 25-point mesh, but because `KAMP` can adapt (and rich meshes are beneficial), a 49-point mesh maximum is encouraged, or `7,7`.
+    >>```jinja
+    >>variable_probe_dock_enable: True       # Normally False, enable with True if you have a dockable probe.
+    >>variable_attach_macro: 'Attach_Probe'  # The macro you use to attach the dockable probe.
+    >>variable_detach_macro: 'Dock_Probe'    # The macro you use to dock the dockable probe.
+    >>...
+    >>```
+
+- Once you have these done, move to the [next section](#ive-configured-my-probe-already-or-my-probe-is-integrated).
+
+</details>
+<br>
+
+
+### I've configured my probe already, or my probe is integrated:
+
+<details>
+    <summary>
+        <b>
+        Expand this section:
+        </b>
+    </summary>
 <p>
 </p>
 
-- If you don't have a good `PRINT_START` macro to use, check out some of the excellent work my good friend [Jontek2](https://github.com/jontek2/A-better-print_start-macro) has done for a simple and powerful `PRINT_START` configuration for Voron printers!
-<p>
-</p>
+- You must have a version of the Klipper firmware that supports [Object Exclusion](https://www.klipper3d.org/Exclude_Object.html?h=exclude#exclude-objects), and have `[exclude_object]` defined in your `printer.cfg` file. [^1]
+  
+    >Printer.cfg
+    >>```jinja
+    >>[exclude_object]
+    >>...
+    >>```
 
-- Try out the `ADAPTIVE_PURGE` macro and sign your work with a neat VoronDesign logo purge right before your print begins! There's lots of neat variables that can be configured to get it perfect, every time. 
+- Once you have `exclude_object` defined in your `printer.cfg` file, make sure you have `enable_object_processing: True` under `[file_manager]` in your `moonraker.conf` file. This will allow Klipper to process incoming gcode files for objects. [^1]
+  
+    >Moonraker.conf
+    >>```jinja
+    >>[file_manager]
+    >>enable_object_processing: True
+    >>...
+    >>```
+
+
+- You must have object labeling enabled in your slicer. (Usually in slicer output options.)
+
 <p align=center>
-    <img src="./Photos/voron-purge-example.png" width="50%"> 
+    <img src="./Photos/KAMP-Assets/Meshing-Assets/slicer-setting.png">
 </p>
 
----
+</details>
+<br>
 
-<!-- Troubleshooting -->
+### I prefer using Moonraker's update manager:
 
-# Troubleshooting:
-##### Error:
-`0 points, clamping to bed mesh [(X_Value,Y_Value) (X_Value,Y_Value)]`
->This error is caused by `BED_MESH_CALIBRATE` or `PRINT_START` being called in your gcode file **before** `EXCLUDE_OBJECT_DEFINE` is. This is something you slicer may be doing. Currently, `exclude_object` injects the object definition code after the first line of gcode it sees. This is being worked on and will be fixed as soon as the PR is merged into Moonraker.
-##### Solution:
->In the mean time, you can add a gcode command in your slicer's start gcode section before `PRINT_START` is called and that will fix the issue. `M117` is a good one to use, it'll just clear the display's current message. 
->
-><p align=center>
-><img src="./Photos/0-points-fix.png" width="50%">
-></p>
->
-><p align=center>
->Here, M117 has been added to the Slicer's Start gcode. 
-></p>
 
+<details>
+    <summary>
+        <b>
+        Expand this section:
+        </b>
+    </summary>
 <p>
 </p>
 
-##### Error:
-`Move exceeds maximum extrusion (X.Xmm^2 vs X.Xmm^2)`
-##### Solution:
->This happens when an extrusion move exceeds Klipper's `max_extrude_cross_section` value. You typically need to increase this value to get a small and effective purge to work. We recommend setting this value to `5` to allow purging, but still protect your extruder if something else is wrong.
->
->Example:
->```ruby
->[extruder]
->...
->max_extrude_cross_section: 5
->...
->```
+Oops! This is still a work in progress. Check back soon!
 
----
+</details>
+<br>
 
-<!-- Credit where it is due -->
+## Troubleshooting
 
-# Honorable Mentions and Amazing Contributors:
+<br>
+
+<details>
+    <summary>
+        <b>
+        0 object points / bed mesh not adapting:
+        </b>
+    </summary>
+<p>
+</p>
+
+- This error is caused by klipper not seeing any object definitions, or `EXCLUDE_OBJECT_DEFINE` is happening *after* `PRINT_START` or `BED_MESH_CALIBRATE` is being called. This is something you slicer may be doing. Currently, `exclude_object` injects the object definition code after the first line of gcode it sees. This is being worked on and will be fixed as soon as the PR is merged into Moonraker.
+
+Solution:
+
+- In the mean time, you can add a gcode command in your slicer's start gcode section before `PRINT_START` is called and that will fix the issue. `M117` is a good one to use, it'll just clear the display's current message. 
+
+<p align=center>
+    <img src="./Photos/KAMP-Assets/Meshing-Assets/0-points-fix.png" width="50%">
+</p>
+    <p align=center>
+        Here, M117 has been added to the Slicer's Start gcode. 
+    </p>
+
+</details> 
+
+<br>
+
+<!-- Adaptive Purging Section -->
+
+# Adaptive Purging
+
+<br>
+
+## Introduction
+Adaptive Purging takes the same secret sauce of Adaptive Meshing, and uses it for a pre-print prime line or purge. So instead of the purge line always being in the same spot of your print bed, the purge will actually be near your print! Some folks find this useful as they can lower the count of lines in their print skirt, or remove it altogether!
+<br>
+
+## Setup - Adaptive Purging
+<br>
+
+All you need to do is `[include]` the config file for the purge you want in your `printer.cfg`, and adjust a few variables for your needs, and that's it!
+
+<br>
+
+<details>
+    <summary>
+        <b>
+        Voron Logo Purge:
+        </b>
+    </summary>
+<p>
+
+- The values you can adjust are fairly straightforward. If the voron logo's first line is half-extruded, you will need to adjust the `variable_tip_distance` value. Here is a visual aid of what `variable_tip_distance` is related to:
+
+</p>
+
+<p align=center>
+    <img src="./Photos/KAMP-Assets/Purging-Assets/tip-distance.png" width="50%">
+</p>
+    <p align=center>
+        Tip distance is the distance from the tip of the filament to the opening of the nozzle. This value will need some adjusting to get the logo to come out clean and perfect. 
+    </p>
+<br>
+
+- Any other variables in `Voron_Purge.cfg` will relate to flow rate, position, size, or amount of filament purged. These settings are easily tweaked to get it just right. Ideally, the purged lines should be touching so the purge can be removed easily when the print is finished. Here's an example of a proper Voron Purge:
+  
+</p>
+
+<p align=center>
+    <img src="./Photos/KAMP-Assets/Purging-Assets/voron-purge-example.png" width="50%">
+</p>
+    <p align=center>
+        As you can see, the purge lines are touching eachother for easy removal, a small amount was purged to prime the nozzle, and the logo came out nicely.
+    </p>
+
+</details> 
+<br>
+
+<details>
+    <summary>
+        <b>
+        Line Purge:
+        </b>
+    </summary>
+<p>
+
+- Just like the voron logo purge, the variables to adjust to get this right are pretty straight forward. The default values should work for most folks, but adjusting `flow_rate`, `line_length`, and `purge_amount` will help you get it just right.
+
+</p>
+</details> 
+<br>
+
+<!-- Special Thanks -->
+
+# Special Thanks
 - [MapleLeafMakers](https://github.com/MapleLeafMakers) - for assisting in the inception of the project.
 - [Julian Schill](https://github.com/julianschill) - A true code warrior and jinja ninja.
 - [KageUrufu](https://github.com/kageurufu) - For spearheading object cancellation in Klipper, and helping make this possible.
 - The Voron Helpers and Voron Contributors team, a group I feel are my close friends.
+<br>
 
 [^1]: After making any changes to critical Klipper or Moonraker functions, be sure to use `FIRMWARE_RESTART`, as well as restart your Moonraker instance so those changes take effect.
+
 [^2]: Mesh point fuzzing allows the user to fuzz mesh points to spread out possible polishing marks and wear from nozzle-based probes, like load cells or Voron Tap.
