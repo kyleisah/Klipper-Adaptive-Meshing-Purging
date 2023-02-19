@@ -35,7 +35,6 @@
 - [Adaptive Purging](#adaptive-purging)
   - [Introduction](#introduction-1)
   - [Setup - Adaptive Purging](#setup---adaptive-purging)
-  - [Troubleshooting - Adaptive Purging](#troubleshooting---adaptive-purging)
 - [Special Thanks](#special-thanks)
 
 <br>
@@ -207,9 +206,7 @@ Relative Reference Index is a method used in the Klipper firmware to calculate m
 <p>
 </p>
 
-1. hello
-2. yes
-3. this is dog
+Oops! This is still a work in progress. Check back soon!
 
 </details>
 <br>
@@ -227,7 +224,7 @@ Relative Reference Index is a method used in the Klipper firmware to calculate m
 <p>
 </p>
 
-- This error is caused by `BED_MESH_CALIBRATE` or `PRINT_START` being called in your gcode file **before** `EXCLUDE_OBJECT_DEFINE` is. This is something you slicer may be doing. Currently, `exclude_object` injects the object definition code after the first line of gcode it sees. This is being worked on and will be fixed as soon as the PR is merged into Moonraker.
+- This error is caused by klipper not seeing any object definitions, or `EXCLUDE_OBJECT_DEFINE` is happening *after* `PRINT_START` or `BED_MESH_CALIBRATE` is being called. This is something you slicer may be doing. Currently, `exclude_object` injects the object definition code after the first line of gcode it sees. This is being worked on and will be fixed as soon as the PR is merged into Moonraker.
 
 Solution:
 
@@ -251,21 +248,73 @@ Solution:
 <br>
 
 ## Introduction
-
+Adaptive Purging takes the same secret sauce of Adaptive Meshing, and uses it for a pre-print prime line or purge. So instead of the purge line always being in the same spot of your print bed, the purge will actually be near your print! Some folks find this useful as they can lower the count of lines in their print skirt, or remove it altogether!
 <br>
 
 ## Setup - Adaptive Purging
 <br>
 
-## Troubleshooting - Adaptive Purging
+All you need to do is `[include]` the config file for the purge you want in your `printer.cfg`, and adjust a few variables for your needs, and that's it!
 
+<br>
+
+<details>
+    <summary>
+        <b>
+        Voron Logo Purge:
+        </b>
+    </summary>
+<p>
+
+- The values you can adjust are fairly straightforward. If the voron logo's first line is half-extruded, you will need to adjust the `variable_tip_distance` value. Here is a visual aid of what `variable_tip_distance` is related to:
+
+</p>
+
+<p align=center>
+    <img src="./Photos/KAMP-Assets/Purging-Assets/tip-distance.png" width="50%">
+</p>
+    <p align=center>
+        Tip distance is the distance from the tip of the filament to the opening of the nozzle. This value will need some adjusting to get the logo to come out clean and perfect. 
+    </p>
+<br>
+
+- Any other variables in `Voron_Purge.cfg` will relate to flow rate, position, size, or amount of filament purged. These settings are easily tweaked to get it just right. Ideally, the purged lines should be touching so the purge can be removed easily when the print is finished. Here's an example of a proper Voron Purge:
+  
+</p>
+
+<p align=center>
+    <img src="./Photos/KAMP-Assets/Purging-Assets/voron-purge-example.png" width="50%">
+</p>
+    <p align=center>
+        As you can see, the purge lines are touching eachother for easy removal, a small amount was purged to prime the nozzle, and the logo came out nicely.
+    </p>
+
+</details> 
+<br>
+
+<details>
+    <summary>
+        <b>
+        Line Purge:
+        </b>
+    </summary>
+<p>
+
+- Just like the voron logo purge, the variables to adjust to get this right are pretty straight forward. The default values should work for most folks, but adjusting `flow_rate`, `line_length`, and `purge_amount` will help you get it just right.
+
+</p>
+</details> 
 <br>
 
 <!-- Special Thanks -->
 
 # Special Thanks
-
+- [MapleLeafMakers](https://github.com/MapleLeafMakers) - for assisting in the inception of the project.
+- [Julian Schill](https://github.com/julianschill) - A true code warrior and jinja ninja.
+- [KageUrufu](https://github.com/kageurufu) - For spearheading object cancellation in Klipper, and helping make this possible.
+- The Voron Helpers and Voron Contributors team, a group I feel are my close friends.
 <br>
 
 [^1]: After making any changes to critical Klipper or Moonraker functions, be sure to use `FIRMWARE_RESTART`, as well as restart your Moonraker instance so those changes take effect.
+
 [^2]: Mesh point fuzzing allows the user to fuzz mesh points to spread out possible polishing marks and wear from nozzle-based probes, like load cells or Voron Tap.
