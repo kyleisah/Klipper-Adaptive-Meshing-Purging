@@ -35,6 +35,7 @@
 - [Adaptive Purging](#adaptive-purging)
   - [Introduction](#introduction-1)
   - [Setup - Adaptive Purging](#setup---adaptive-purging)
+- [Alternative Setup](#alternative-setup)
 - [Special Thanks](#special-thanks)
 
 <br>
@@ -305,6 +306,56 @@ All you need to do is `[include]` the config file for the purge you want in your
 </p>
 </details> 
 <br>
+
+<!-- Alternative Setup  -->
+# Alternative Setup
+The purpose of this setup is to enable the possibility to update KAMP using Moonraker plugin manager.
+This comes at cost of higher complexity of setup process and the need to edit already existing PRINT_START
+
+```
+cd ~
+git clone https://github.com/kyleisah/Klipper-Adaptive-Meshing-Purging.git
+ln -s ~/Klipper-Adaptive-Meshing-Purging/Configuration printer_data/config/kamp.d
+```
+
+Then, add the following snippet into your `printer.cfg` (`~printer_data/config/printer.cfg`)
+```
+[include kamp.d/*cfg]
+```
+
+Add the following snippet to  ~/printer_data/config/moonraker.conf
+
+```
+[update_manager Klipper-Adaptive-Meshing-Purging]
+type: git_repo
+channel: dev
+path: ~/Klipper-Adaptive-Meshing-Purging
+origin: https://github.com/kyleisah/Klipper-Adaptive-Meshing-Purging.git
+managed_services: klipper
+primary_branch: main
+```
+
+This should be all that needs to be done for enabling updates via moonraker plugin infrastructure.
+Now, for configuration you need to add call to the macro
+```
+SETUP_KAMP_MESHING [parameters]
+```
+and for an adaptive purge (with nice Voron-logo)
+```
+SETUP_VORON_PURGE [parameters]
+```
+or for an adaptive purge in a form of a simple line
+```
+SETUP_LINE_PURGE [parameters]
+```
+
+As for the parameters, you can inspect the individual config files and the macros or call
+```
+SETUP_KAMP_MESHING DISPLAY_PARAMETERS=true
+SETUP_VORON_PURGE DISPLAY_PARAMETERS=true
+SETUP_LINE_PURGE DISPLAY_PARAMETERS=true
+```
+
 
 <!-- Special Thanks -->
 
