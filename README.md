@@ -349,8 +349,33 @@ or for an adaptive purge in a form of a simple line
 SETUP_LINE_PURGE [parameters]
 ```
 
-As for the parameters, you can inspect the individual config files and the macros. You can also add the parameter `DISPLAY_PARAMETER=1` to either of these three calls and it will print current values (useful for debugging).
-After modifying the PRINT_START macro, do not forget to restart klipper again.
+Be sure the calls for BED_MESH_CALIBRATE and/or VORON_PURGE/LINE_PURGE are also included in your PRINT_START and are called AFTER calling these setup macros.
+As for the parameters, you can inspect the individual config files and the macros. You can also add the parameter `DISPLAY_PARAMETERS=1` to either of the SETUP calls and it will print current values (useful for debugging) during call of the actual macros..
+After modifying the `PRINT_START` macro, do not forget to restart klipper again.
+
+Example `PRINT_START`
+```
+[gcode_macro PRINT_START]
+#   Use PRINT_START for the slicer starting script - PLEASE CUSTOMISE THE SCRIPT
+gcode:
+    {% set BED = params.BED|default(100)|int %}
+    {% set EXTRUDER = params.EXTRUDER|default(245)|int %}
+    SETUP_KAMP_MESHING DISPLAY_PARAMETERS=1 LED_ENABLE=1 FUZZ_ENABLE=1
+    SETUP_VORON_PURGE DISPLAY_PARAMETERS=1 ADAPTIVE_ENABLE=1
+    BED_MESH_CLEAR
+    STATUS_HEATING
+    M104 S150
+    M190 S{BED}
+    M109 S150
+    G28
+    Z_TILT_ADJUST
+    G28 Z
+    SET_GCODE_OFFSET Z_ADJUST={params.Z_ADJUST|default(0.0)|float} MOVE=1
+    BED_MESH_CALIBRATE
+    M109 S{EXTRUDER}
+    STATUS_PRINTING
+    VORON_PURGE
+```
 
 <!-- Special Thanks -->
 
