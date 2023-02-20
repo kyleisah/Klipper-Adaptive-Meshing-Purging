@@ -335,7 +335,7 @@ managed_services: klipper
 primary_branch: main
 ```
 
-This should be all that needs to be done for enabling updates via moonraker plugin infrastructure.
+This should be all that needs to be done for enabling updates via moonraker plugin infrastructure. Restart moonraker and klipper (or restart the Raspberry Pi)
 Now, for configuration you need to add call to the macro
 ```
 SETUP_KAMP_MESHING [parameters]
@@ -349,13 +349,8 @@ or for an adaptive purge in a form of a simple line
 SETUP_LINE_PURGE [parameters]
 ```
 
-As for the parameters, you can inspect the individual config files and the macros or call
-```
-SETUP_KAMP_MESHING DISPLAY_PARAMETERS=true
-SETUP_VORON_PURGE DISPLAY_PARAMETERS=true
-SETUP_LINE_PURGE DISPLAY_PARAMETERS=true
-```
-
+As for the parameters, you can inspect the individual config files and the macros. You can also add the parameter `DISPLAY_PARAMETER=1` to either of these three calls and it will print current values (useful for debugging).
+After modifying the PRINT_START macro, do not forget to restart klipper again.
 
 <!-- Special Thanks -->
 
