@@ -35,7 +35,6 @@
 - [Adaptive Purging](#adaptive-purging)
   - [Introduction](#introduction-1)
   - [Setup - Adaptive Purging](#setup---adaptive-purging)
-- [Alternative Setup](#alternative-setup)
 - [Special Thanks](#special-thanks)
 
 <br>
@@ -219,12 +218,18 @@ To begin, `ssh` into your device running klipper and use the following commands:
 ```bash
 cd
 git clone https://github.com/kyleisah/Klipper-Adaptive-Meshing-Purging.git
-ln -s ~/Klipper-Adaptive-Meshing-Purging/Configuration printer_data/config/kamp.d
+ln -s ~/Klipper-Adaptive-Meshing-Purging/Configuration printer_data/config/KAMP
 ```
 
 Then, add the following snippet into your `printer.cfg` file: [^1]
 ```jinja
-[include kamp.d/*cfg]
+[include KAMP/*cfg]
+```
+Alternatively, you can choose which files you wish to include (useful for those who **only** want adaptive purging) by using the following: [^1]
+```jinja
+[include KAMP/Adaptive_Mesh.cfg]
+[include KAMP/Voron_Purge.cfg]
+[include KAMP/Line_Purge.cfg]
 ```
 
 Lastly, add the following snippet to your `moonraker.conf` file: [^1]
@@ -241,47 +246,50 @@ primary_branch: main
 
 This should be all that needs to be done for enabling updates via Moonraker's Update Manager! Be sure to restart your firmware and moonraker instance, or reboot your Pi for all changes to take effect. [^1]
 
-> For setting up adaptive meshing in your `PRINT_START`, you need to call the macro:
+⚠️ Please pay special attention to the following, as this is a critical step:
+
+Before using any macros from KAMP when using the moonraker managed method, you have to **SET** the parameters for the macros before they are called, or they will only use the default parameters. You should only have to change your `PRINT_START` once or twice until you have the parameters set how you like them, then you can leave them alone. There is an example provided at the bottom of this section to show you how you can do this.
+
+> For setting up adaptive meshing, you need to call the macro:
 >> ```jinja
 >> SETUP_KAMP_MESHING [parameters]
 >> ```
 > For adaptive purging (Voron-logo):
-    > ```jinja
-    > SETUP_VORON_PURGE [parameters]
-    > ```
-or for an adaptive purging in a form of a simple line:
-```jinja
-SETUP_LINE_PURGE [parameters]
-```
+>> ```jinja
+>> SETUP_VORON_PURGE [parameters]
+>> ```
+> For an adaptive purging in a form of a simple line:
+>> ```jinja
+>> SETUP_LINE_PURGE [parameters]
+>> ```
 
 Be sure the calls for `BED_MESH_CALIBRATE` and/or `VORON_PURGE`/`LINE_PURGE` are also included in your `PRINT_START` and are called **AFTER** calling these setup macros.
 
-As for the parameters, you can inspect the individual config files and the macros. You can also add the parameter `DISPLAY_PARAMETERS=1` to either of the SETUP calls and it will print current values (useful for debugging) during call of the actual macros..
-After modifying the `PRINT_START` macro, do not forget to restart klipper again.
+As for the parameters, you can inspect the individual config files and the macros. You can also add the parameter `DISPLAY_PARAMETERS=1` to either of the SETUP calls and it will print current values (useful for debugging) when calling the actual macros.
+After modifying the `PRINT_START` macro, do not forget to restart klipper again. [^1]
 
-Example `PRINT_START`
+Example `PRINT_START`:
 ```
 [gcode_macro PRINT_START]
-#   Use PRINT_START for the slicer starting script - PLEASE CUSTOMISE THE SCRIPT
 gcode:
-    {% set BED = params.BED|default(100)|int %}
-    {% set EXTRUDER = params.EXTRUDER|default(245)|int %}
+    .
+    .
     SETUP_KAMP_MESHING DISPLAY_PARAMETERS=1 LED_ENABLE=1 FUZZ_ENABLE=1
     SETUP_VORON_PURGE DISPLAY_PARAMETERS=1 ADAPTIVE_ENABLE=1
+    .
+    .
     BED_MESH_CLEAR
-    STATUS_HEATING
-    M104 S150
-    M190 S{BED}
-    M109 S150
-    G28
-    Z_TILT_ADJUST
-    G28 Z
-    SET_GCODE_OFFSET Z_ADJUST={params.Z_ADJUST|default(0.0)|float} MOVE=1
     BED_MESH_CALIBRATE
-    M109 S{EXTRUDER}
-    STATUS_PRINTING
+    .
+    .
     VORON_PURGE
 ```
+
+As you can see, `SETUP_KAMP_MESHING` is setting `LED_ENABLE` and `FUZZ_ENABLE` *before* `BED_MESH_CALIBRATE` is called. The same has also been done using `SETUP_VORON_PURGE`. 
+
+<br>
+
+**It is important that the `SETUP` macros are being called *before* the actual macro, otherwise default values are used.**
 
 </details>
 <br>
