@@ -394,6 +394,7 @@ All you need to do is `[include]` the config file for the purge you want in your
 - [Julian Schill](https://github.com/julianschill) - A true code warrior and jinja ninja.
 - [KageUrufu](https://github.com/kageurufu) - For spearheading object cancellation in Klipper, and helping make this possible.
 - [Le0n](https://github.com/leanghoun) - For the awesome logo work and continuous support for the project.
+- [Yenda](https://github.com/jtrmal) - For bringing KAMP into the realm of Moonraker's Update Manager.
 - The Voron Helpers and Voron Contributors team, a group I feel are my close friends.
 <br>
 
