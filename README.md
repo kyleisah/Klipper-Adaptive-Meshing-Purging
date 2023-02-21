@@ -195,6 +195,8 @@ Relative Reference Index is a method used in the Klipper firmware to calculate m
 </details>
 <br>
 
+<!-- Moonraker Setup  -->
+
 ### I prefer using Moonraker's update manager:
 
 
@@ -207,7 +209,79 @@ Relative Reference Index is a method used in the Klipper firmware to calculate m
 <p>
 </p>
 
-Oops! This is still a work in progress. Check back soon!
+# Moonraker Update Manager Setup
+
+The purpose of this setup is to enable updating KAMP by using Moonraker's plugin manager.
+This comes at cost of higher complexity of setup, **and** the need to edit an already existing `PRINT_START` Macro.
+
+To begin, `ssh` into your device running klipper and use the following commands:
+
+```bash
+cd
+git clone https://github.com/kyleisah/Klipper-Adaptive-Meshing-Purging.git
+ln -s ~/Klipper-Adaptive-Meshing-Purging/Configuration printer_data/config/kamp.d
+```
+
+Then, add the following snippet into your `printer.cfg` file: [^1]
+```jinja
+[include kamp.d/*cfg]
+```
+
+Lastly, add the following snippet to your `moonraker.conf` file: [^1]
+
+```jinja
+[update_manager Klipper-Adaptive-Meshing-Purging]
+type: git_repo
+channel: dev
+path: ~/Klipper-Adaptive-Meshing-Purging
+origin: https://github.com/kyleisah/Klipper-Adaptive-Meshing-Purging.git
+managed_services: klipper
+primary_branch: main
+```
+
+This should be all that needs to be done for enabling updates via Moonraker's Update Manager! Be sure to restart your firmware and moonraker instance, or reboot your Pi for all changes to take effect. [^1]
+
+> For setting up adaptive meshing in your `PRINT_START`, you need to call the macro:
+>> ```jinja
+>> SETUP_KAMP_MESHING [parameters]
+>> ```
+> For adaptive purging (Voron-logo):
+    > ```jinja
+    > SETUP_VORON_PURGE [parameters]
+    > ```
+or for an adaptive purging in a form of a simple line:
+```jinja
+SETUP_LINE_PURGE [parameters]
+```
+
+Be sure the calls for `BED_MESH_CALIBRATE` and/or `VORON_PURGE`/`LINE_PURGE` are also included in your `PRINT_START` and are called **AFTER** calling these setup macros.
+
+As for the parameters, you can inspect the individual config files and the macros. You can also add the parameter `DISPLAY_PARAMETERS=1` to either of the SETUP calls and it will print current values (useful for debugging) during call of the actual macros..
+After modifying the `PRINT_START` macro, do not forget to restart klipper again.
+
+Example `PRINT_START`
+```
+[gcode_macro PRINT_START]
+#   Use PRINT_START for the slicer starting script - PLEASE CUSTOMISE THE SCRIPT
+gcode:
+    {% set BED = params.BED|default(100)|int %}
+    {% set EXTRUDER = params.EXTRUDER|default(245)|int %}
+    SETUP_KAMP_MESHING DISPLAY_PARAMETERS=1 LED_ENABLE=1 FUZZ_ENABLE=1
+    SETUP_VORON_PURGE DISPLAY_PARAMETERS=1 ADAPTIVE_ENABLE=1
+    BED_MESH_CLEAR
+    STATUS_HEATING
+    M104 S150
+    M190 S{BED}
+    M109 S150
+    G28
+    Z_TILT_ADJUST
+    G28 Z
+    SET_GCODE_OFFSET Z_ADJUST={params.Z_ADJUST|default(0.0)|float} MOVE=1
+    BED_MESH_CALIBRATE
+    M109 S{EXTRUDER}
+    STATUS_PRINTING
+    VORON_PURGE
+```
 
 </details>
 <br>
@@ -245,8 +319,6 @@ Solution:
 <!-- Adaptive Purging Section -->
 
 # Adaptive Purging
-
-<br>
 
 ## Introduction
 Adaptive Purging takes the same secret sauce of Adaptive Meshing, and uses it for a pre-print prime line or purge. So instead of the purge line always being in the same spot of your print bed, the purge will actually be near your print! Some folks find this useful as they can lower the count of lines in their print skirt, or remove it altogether!
@@ -306,76 +378,6 @@ All you need to do is `[include]` the config file for the purge you want in your
 </p>
 </details> 
 <br>
-
-<!-- Alternative Setup  -->
-# Alternative Setup
-The purpose of this setup is to enable the possibility to update KAMP using Moonraker plugin manager.
-This comes at cost of higher complexity of setup process and the need to edit already existing PRINT_START
-
-```
-cd ~
-git clone https://github.com/kyleisah/Klipper-Adaptive-Meshing-Purging.git
-ln -s ~/Klipper-Adaptive-Meshing-Purging/Configuration printer_data/config/kamp.d
-```
-
-Then, add the following snippet into your `printer.cfg` (`~printer_data/config/printer.cfg`)
-```
-[include kamp.d/*cfg]
-```
-
-Add the following snippet to  ~/printer_data/config/moonraker.conf
-
-```
-[update_manager Klipper-Adaptive-Meshing-Purging]
-type: git_repo
-channel: dev
-path: ~/Klipper-Adaptive-Meshing-Purging
-origin: https://github.com/kyleisah/Klipper-Adaptive-Meshing-Purging.git
-managed_services: klipper
-primary_branch: main
-```
-
-This should be all that needs to be done for enabling updates via moonraker plugin infrastructure. Restart moonraker and klipper (or restart the Raspberry Pi)
-Now, for configuration you need to add call to the macro
-```
-SETUP_KAMP_MESHING [parameters]
-```
-and for an adaptive purge (with nice Voron-logo)
-```
-SETUP_VORON_PURGE [parameters]
-```
-or for an adaptive purge in a form of a simple line
-```
-SETUP_LINE_PURGE [parameters]
-```
-
-Be sure the calls for BED_MESH_CALIBRATE and/or VORON_PURGE/LINE_PURGE are also included in your PRINT_START and are called AFTER calling these setup macros.
-As for the parameters, you can inspect the individual config files and the macros. You can also add the parameter `DISPLAY_PARAMETERS=1` to either of the SETUP calls and it will print current values (useful for debugging) during call of the actual macros..
-After modifying the `PRINT_START` macro, do not forget to restart klipper again.
-
-Example `PRINT_START`
-```
-[gcode_macro PRINT_START]
-#   Use PRINT_START for the slicer starting script - PLEASE CUSTOMISE THE SCRIPT
-gcode:
-    {% set BED = params.BED|default(100)|int %}
-    {% set EXTRUDER = params.EXTRUDER|default(245)|int %}
-    SETUP_KAMP_MESHING DISPLAY_PARAMETERS=1 LED_ENABLE=1 FUZZ_ENABLE=1
-    SETUP_VORON_PURGE DISPLAY_PARAMETERS=1 ADAPTIVE_ENABLE=1
-    BED_MESH_CLEAR
-    STATUS_HEATING
-    M104 S150
-    M190 S{BED}
-    M109 S150
-    G28
-    Z_TILT_ADJUST
-    G28 Z
-    SET_GCODE_OFFSET Z_ADJUST={params.Z_ADJUST|default(0.0)|float} MOVE=1
-    BED_MESH_CALIBRATE
-    M109 S{EXTRUDER}
-    STATUS_PRINTING
-    VORON_PURGE
-```
 
 <!-- Special Thanks -->
 
