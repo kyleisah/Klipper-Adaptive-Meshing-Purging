@@ -194,6 +194,8 @@ Relative Reference Index is a method used in the Klipper firmware to calculate m
 </details>
 <br>
 
+<!-- Moonraker Setup  -->
+
 ### I prefer using Moonraker's update manager:
 
 
@@ -206,7 +208,88 @@ Relative Reference Index is a method used in the Klipper firmware to calculate m
 <p>
 </p>
 
-Oops! This is still a work in progress. Check back soon!
+# Moonraker Update Manager Setup
+
+The purpose of this setup is to enable updating KAMP by using Moonraker's plugin manager.
+This comes at cost of higher complexity of setup, **and** the need to edit an already existing `PRINT_START` Macro.
+
+To begin, `ssh` into your device running klipper and use the following commands:
+
+```bash
+cd
+git clone https://github.com/kyleisah/Klipper-Adaptive-Meshing-Purging.git
+ln -s ~/Klipper-Adaptive-Meshing-Purging/Configuration printer_data/config/KAMP
+```
+
+Then, add the following snippet into your `printer.cfg` file: [^1]
+```jinja
+[include KAMP/*cfg]
+```
+Alternatively, you can choose which files you wish to include (useful for those who **only** want adaptive purging) by using the following: [^1]
+```jinja
+[include KAMP/Adaptive_Mesh.cfg]
+[include KAMP/Voron_Purge.cfg]
+[include KAMP/Line_Purge.cfg]
+```
+
+Lastly, add the following snippet to your `moonraker.conf` file: [^1]
+
+```jinja
+[update_manager Klipper-Adaptive-Meshing-Purging]
+type: git_repo
+channel: dev
+path: ~/Klipper-Adaptive-Meshing-Purging
+origin: https://github.com/kyleisah/Klipper-Adaptive-Meshing-Purging.git
+managed_services: klipper
+primary_branch: main
+```
+
+This should be all that needs to be done for enabling updates via Moonraker's Update Manager! Be sure to restart your firmware and moonraker instance, or reboot your Pi for all changes to take effect. [^1]
+
+⚠️ Please pay special attention to the following, as this is a critical step:
+
+Before using any macros from KAMP when using the moonraker managed method, you have to **SET** the parameters for the macros before they are called, or they will only use the default parameters. You should only have to change your `PRINT_START` once or twice until you have the parameters set how you like them, then you can leave them alone. There is an example provided at the bottom of this section to show you how you can do this.
+
+> For setting up adaptive meshing, you need to call the macro:
+>> ```jinja
+>> SETUP_KAMP_MESHING [parameters]
+>> ```
+> For adaptive purging (Voron-logo):
+>> ```jinja
+>> SETUP_VORON_PURGE [parameters]
+>> ```
+> For an adaptive purging in a form of a simple line:
+>> ```jinja
+>> SETUP_LINE_PURGE [parameters]
+>> ```
+
+Be sure the calls for `BED_MESH_CALIBRATE` and/or `VORON_PURGE`/`LINE_PURGE` are also included in your `PRINT_START` and are called **AFTER** calling these setup macros.
+
+As for the parameters, you can inspect the individual config files and the macros. You can also add the parameter `DISPLAY_PARAMETERS=1` to either of the SETUP calls and it will print current values (useful for debugging) when calling the actual macros.
+After modifying the `PRINT_START` macro, do not forget to restart klipper again. [^1]
+
+Example `PRINT_START`:
+```
+[gcode_macro PRINT_START]
+gcode:
+    .
+    .
+    SETUP_KAMP_MESHING DISPLAY_PARAMETERS=1 LED_ENABLE=1 FUZZ_ENABLE=1
+    SETUP_VORON_PURGE DISPLAY_PARAMETERS=1 ADAPTIVE_ENABLE=1
+    .
+    .
+    BED_MESH_CLEAR
+    BED_MESH_CALIBRATE
+    .
+    .
+    VORON_PURGE
+```
+
+As you can see, `SETUP_KAMP_MESHING` is setting `LED_ENABLE` and `FUZZ_ENABLE` *before* `BED_MESH_CALIBRATE` is called. The same has also been done using `SETUP_VORON_PURGE`. 
+
+<br>
+
+**It is important that the `SETUP` macros are being called *before* the actual macro, otherwise default values are used.**
 
 </details>
 <br>
@@ -244,8 +327,6 @@ Solution:
 <!-- Adaptive Purging Section -->
 
 # Adaptive Purging
-
-<br>
 
 ## Introduction
 Adaptive Purging takes the same secret sauce of Adaptive Meshing, and uses it for a pre-print prime line or purge. So instead of the purge line always being in the same spot of your print bed, the purge will actually be near your print! Some folks find this useful as they can lower the count of lines in their print skirt, or remove it altogether!
