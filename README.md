@@ -51,11 +51,11 @@
 <img src="./KAMP-Assets/Purging-Assets/voron-purge-example.png" width="375" >
 </p>
 
-<center>
+<p align="center">
     <b>
         Adaptive Voron Logo Purge
     </b>
-</center>
+</p>
 
 ## Requirements:
 
