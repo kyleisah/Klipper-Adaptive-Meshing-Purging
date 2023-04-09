@@ -1,7 +1,7 @@
 
 <h1 align="center">
   <br>
-  <img src="./KAMP-Assets/Logo/KAMP-Logo.png" width="260"></a>
+  <img src="./Photos/Logo/KAMP-Logo.png" width="260"></a>
   <br>
     Klipper Adaptive Meshing & Purging
   <br>
@@ -10,7 +10,7 @@
 <h4 align="center"> Your 3D printer just got a whole lot smarter!</h4>
     <br>
 <p align="center">
-<img src="./KAMP-Assets/Badges/built-for-klipper-made-with-love.svg" width="400">
+<img src="./Photos/Badges/built-for-klipper-made-with-love.svg" width="400">
 </p>
 
 <p align="center">
@@ -24,7 +24,7 @@
 </p>
 
 <p align="center">
-<img src="./KAMP-Assets/Meshing-Assets/adaptive_benchy_glow.gif" width=300>
+<img src="./Photos/Meshing-Assets/adaptive_benchy_glow.gif" width=300>
 
 ## Key Features:
 
@@ -48,7 +48,7 @@
   - Allows you to purge right next to the print area. We don't believe in boring purges, we like to sign our work with purge logos! We also have provisions for [more simplistic]() purges as well.
 
 <p align="center">
-<img src="./KAMP-Assets/Purging-Assets/voron-purge-example.png" width="375" >
+<img src="./Photos/Purging-Assets/voron-purge-example.png" width="375" >
 </p>
 
 <p align="center">
@@ -71,7 +71,7 @@
 3. Finally, you will need to make sure your slicer is labeling objects:
 
 <p align="center">
-<img src="./KAMP-Assets/Meshing-Assets/slicer-setting.png" width="500">
+<img src="./Photos/Meshing-Assets/slicer-setting.png" width="500">
 </p>
 
 <p align="center">
