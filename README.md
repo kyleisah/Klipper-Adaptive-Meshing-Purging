@@ -35,6 +35,7 @@
 * Compatibility
   - If you've got a 3D printer running Klipper and a probe, KAMP is ready to serve you.
   - We've seen users have success with inductive probes, [Klicky](https://github.com/jlas1/Klicky-Probe), [Euclid](https://github.com/nionio6915/Euclid_Probe), BLTouch, and [Voron Tap](https://github.com/VoronDesign/Voron-Tap)
+  
     >**Note:**
     >KAMP  has the option to fuzz mesh points, which helps to spread out wear from nozzle-based probing.
 * Straightforward setup
@@ -94,8 +95,10 @@ The cleanest and easiest way to get started with KAMP is to use Moonraker's Upda
     ```
     > **Note:**
     > This will change to the home directory, clone the KAMP repo, create a symbolic link of the repo to your printer's config folder, and create a copy of `KAMP_Settings.cfg` in your config directory, ready to edit.
+    > 
+    > It is also possible that with older setups of klipper or moonraker that your config path will be different. Be sure to use the correct config path for your machine when making the symbolic link, and when copying `KAMP_Settings.cfg` to your config directory.
 
-2. Open your `Moonraker.cfg` and add this configuration:
+2. Open your `moonraker.cfg` file and add this configuration:
    ```yaml
    [update_manager Klipper-Adaptive-Meshing-Purging]
     type: git_repo
@@ -107,36 +110,85 @@ The cleanest and easiest way to get started with KAMP is to use Moonraker's Upda
     ```
 
     > **Note:**
-    > Whenever Moonraker configurations are changed, it must be restarted for changes to take effect.
+    > Whenever Moonraker configurations are changed, it must be restarted for changes to take effect. If you do not want moonraker to notify you of future updates to KAMP, feel free to skip this.
 
-3. Depending on what features you want from KAMP, you'll need to `[include]` some files in your `printer.cfg`.
-
-    UPDATE THIS TO LINK TO CONFIG FILE THAT NEEDS TO BE COPY/PASTED, ADD INCLUDE LINES TO THAT CONFIG
+3. Depending on what features you want from KAMP, you'll need to `[include]` some files in your config:
 
     ```yaml
-    # This file contains everything KAMP needs to work, and must be included.
-    [include ./KAMP/Base_KAMP.cfg]
+    # This file contains all settings for KAMP, and must be included in printer.cfg with:
+
+    [include KAMP_Settings.cfg]
 
     # This file enables the use of adaptive meshing.
+
     [include ./KAMP/Adaptive_Meshing.cfg]
 
-    # This file enables the use of adaptive purging.
-    [include ./KAMP/Adaptive_Purging.cfg]
+    # This file enables the use of adaptive line purging.
+
+    [include ./KAMP/Line_Purge.cfg]
     ```
 
     >**Note:**
     The KAMP configuration files are broken up like this to allow those who do not use bed probes to benefit from adaptive purging.
 
-4. After you `[include]` the features you want, restart your firmware and test KAMP with this macro:
-    ```yaml
-    
-    ```
+4. After you `[include]` the features you want, be sure to restart your firmware so those inclusions take effect.
+
+<br>
+
+---
+
+<br>
+
+## How to use `KAMP_Settings.cfg`:
+<br>
+
+  >**Note:**
+  For ease of use and understanding, all KAMP configuration is contained inside of `KAMP_Settings.cfg`. Any changes you wish to make to KAMP specifically can be found here.
+
+<br>
 
 ## Adaptive Meshing:
-*
+
+* Mesh generation and adjustment:
+
+  * These variables affect how KAMP creates meshes:
+
+    * `mesh_margin:` This is the amount of space in millimeters **beyond** your print area to further increase the size of the adapted mesh. Rather than a mesh starting at `X50 Y50`, if `Mesh_Margin` is set to `10`, the mesh will be stretched, and the new mesh bounds will start at `X40 Y40` instead. This can be useful for those who commonly use brims when printing. By default, this value is 0.
+
+    * `fuzz_amount:` This is the **maximum** amount that the mesh bounds can be increased in millimeters *by random*. This setting is really only intended for those who use a nozzle-based probe like a strain gauge or Voron Tap. This will slightly randomize the bounds of the bed mesh which will help to spread out wear on your print surface when printing multiples of the same print job (several plates of similar size). By default, this value is 0. **Maximum** `fuzz_amount` recommended is `3`.
+
+<br>
+
+* Using a probe that is not integrated into the printhead (Klicky, Euclid, etc)
+  
+  * Usually have special macros that are used to attach and detach the probe as it is needed. 
+
+    * `probe_dock_enable:` By default, this setting is `False`. Set this to `True` if your machine has a probe that needs to be attached with a special macro before probing the bed.
+
+    * `attach_macro:` Define the macro that your machine uses to attach the probe here.
+
+    * `detach_macro:` Define the macro that your machine uses to detach the probe here.
 
 ## Adaptive Purging:
-*
+
+* These settings directly affect how KAMP handles it's purge routines and placement:
+
+  * `purge_height:` This is the height above the bed that the nozzle will be when KAMP does it's purge. This should not need much adjustment, unless you are using a nozzle with a large diameter, or purging a very small amount. The default for this value is `0.8`.
+  
+  * `tip_distance:` This is the distance that the very tip of your loaded filament is away from the opening of your nozzle. It's a good idea to tune this value so your purge is nice and consistent, rather than spotty or blown out at the beginning. It's a good idea to set this value to be a little bit less than the final retract that happens in your `Print_End` macro.
+
+<p align="center">
+<img src="./Photos/Purging-Assets/tip-distance.png" height="350" >
+</p>
+
+  * `purge_margin:` This is the amount of space you wish to have between your purge, and your actual print area. Helpful for those who print using brims or skirts, or have a printhead with ducts that are very close to the bed during the first few layers of a print. By default, this value is `10` as a healthy, but conservative buffer.
+
+  * `purge_amount:` This is the amount in millimeters of filament material you wish to purge prior to a print beginning. Some users prefer only to purge enough to get the nozzle ready, and some users prefer to purge enough to change a filament color before a print. After some testing, the default amount to purge is `30` millimeters of material.
+
+  * `flow_rate:` This is the desired flow rate you wish to purge at. You should set this value to be close to the flow limit of your hotend. Standard flow hotends like MicroSwiss, Dragonfly, or Revo should be around `12` or so, while higher flow hotends, like the Rapido or Dragon, should be set somewhere around `20`.
+
+  >**Note:**
+It is required to add `max_extrude_cross_section: 5` to your `[extruder]` config to allow effective purging to be possible. KAMP will warn you if you forget to set this value, and skip the purge so the printer will not be halted. It is also recommended to set up [firmware_retraction](https://www.klipper3d.org/Config_Reference.html?h=retract#firmware_retraction) inside of klipper so KAMP can use the correct retration settings for your machine. If this is not found, KAMP will warn you, and use reasonable direct-drive extruder values to complete the purge.
 
 ## Troubleshooting:
 * 
