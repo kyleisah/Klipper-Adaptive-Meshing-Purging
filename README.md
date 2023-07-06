@@ -119,6 +119,8 @@ The cleanest and easiest way to get started with KAMP is to use Moonraker's Upda
 
     [include KAMP_Settings.cfg]
 
+    ### The following [includes] can be uncommented from within KAMP_Settings.cfg. ###
+
     # This file enables the use of adaptive meshing.
 
     [include ./KAMP/Adaptive_Meshing.cfg]
