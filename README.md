@@ -209,7 +209,7 @@ KAMP was not a one man effort, it was made possible with help from fine folks su
 ## You may also like...
 
 - [Ellis' Print-Tuning Guide](https://ellis3dp.com/Print-Tuning-Guide/) - A guide for tuning your 3D printer to *perfection*.
-- [Jontek2's Print_Start Guide](https://github.com/amitmerchant1990/correo) - A fantastic `Print_Start` guide for Voron printers.
+- [Jontek2's Print_Start Guide](https://github.com/jontek2/A-better-print_start-macro) - A fantastic `Print_Start` guide for Voron printers.
 - [Takuya's Tools](http://tools.takuya.wtf/index.html) A collection of handy tools for any Klipper user.
 
 ---
