@@ -128,10 +128,18 @@ The cleanest and easiest way to get started with KAMP is to use Moonraker's Upda
     # This file enables the use of adaptive line purging.
 
     [include ./KAMP/Line_Purge.cfg]
+
+    # This file enables the use of the adaptive Voron logo purge.
+
+    [include ./KAMP/Voron_Purge.cfg]
+
+    # This file enables the use of KAMP's Smart Park feature.
+
+    [include ./KAMP/Smart_Park.cfg]
     ```
 
     >**Note:**
-    The KAMP configuration files are broken up like this to allow those who do not use bed probes to benefit from adaptive purging.
+    The KAMP configuration files are broken up like this to allow those who do not use bed probes to benefit from adaptive purging, and other features.
 
 4. After you `[include]` the features you want, be sure to restart your firmware so those inclusions take effect.
 
@@ -191,6 +199,12 @@ The cleanest and easiest way to get started with KAMP is to use Moonraker's Upda
 
   >**Note:**
 It is required to add `max_extrude_cross_section: 5` to your `[extruder]` config to allow effective purging to be possible. KAMP will warn you if you forget to set this value, and skip the purge so the printer will not be halted. It is also recommended to set up [firmware_retraction](https://www.klipper3d.org/Config_Reference.html?h=retract#firmware_retraction) inside of klipper so KAMP can use the correct retration settings for your machine. If this is not found, KAMP will warn you, and use reasonable direct-drive extruder values to complete the purge.
+
+## Smart Park:
+
+* These settings are used for adjusting KAMP's Smart Park function, which is helpful to move the printhead near the print area to do your final heating.
+
+  * `smart_park_height:` This is the height at which you'd like your printhead to be when calling the `Smart_Park` macro. **Don't forget to add this near the end of your `Print_Start` macro, *before* the final heating command is called.**
 
 ## Troubleshooting:
 * 
