@@ -204,7 +204,7 @@ It is required to add `max_extrude_cross_section: 5` to your `[extruder]` config
 
 * These settings are used for adjusting KAMP's Smart Park function, which is helpful to move the printhead near the print area to do your final heating.
 
-  * `smart_park_height:` This is the height at which you'd like your printhead to be when calling the `Smart_Park` macro. **Don't forget to add this near the end of your `Print_Start` macro, *before* the final heating command is called.**
+  * `smart_park_height:` This is the height at which you'd like your printhead to be when calling the `Smart_Park` macro. **Don't forget to add `Smart_Park` near the end of your `Print_Start` macro, *before* the final heating command is called.**
 
 ## Troubleshooting:
 * 
