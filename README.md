@@ -98,16 +98,16 @@ The cleanest and easiest way to get started with KAMP is to use Moonraker's Upda
     > 
     > It is also possible that with older setups of klipper or moonraker that your config path will be different. Be sure to use the correct config path for your machine when making the symbolic link, and when copying `KAMP_Settings.cfg` to your config directory.
 
-2. Open your `moonraker.cfg` file and add this configuration:
+2. Open your `moonraker.conf` file and add this configuration:
    ```yaml
-   [update_manager Klipper-Adaptive-Meshing-Purging]
+    [update_manager Klipper-Adaptive-Meshing-Purging]
     type: git_repo
     channel: dev
     path: ~/Klipper-Adaptive-Meshing-Purging
     origin: https://github.com/kyleisah/Klipper-Adaptive-Meshing-Purging.git
     managed_services: klipper
     primary_branch: main
-    ```
+  ```
 
     > **Note:**
     > Whenever Moonraker configurations are changed, it must be restarted for changes to take effect. If you do not want moonraker to notify you of future updates to KAMP, feel free to skip this.
