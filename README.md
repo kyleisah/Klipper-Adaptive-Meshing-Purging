@@ -98,9 +98,9 @@ The cleanest and easiest way to get started with KAMP is to use Moonraker's Upda
     > 
     > It is also possible that with older setups of klipper or moonraker that your config path will be different. Be sure to use the correct config path for your machine when making the symbolic link, and when copying `KAMP_Settings.cfg` to your config directory.
 
-2. Open your `moonraker.cfg` file and add this configuration:
+2. Open your `moonraker.conf` file and add this configuration:
    ```yaml
-   [update_manager Klipper-Adaptive-Meshing-Purging]
+    [update_manager Klipper-Adaptive-Meshing-Purging]
     type: git_repo
     channel: dev
     path: ~/Klipper-Adaptive-Meshing-Purging
@@ -207,7 +207,17 @@ It is required to add `max_extrude_cross_section: 5` to your `[extruder]` config
   * `smart_park_height:` This is the height at which you'd like your printhead to be when calling the `Smart_Park` macro. **Don't forget to add `Smart_Park` near the end of your `Print_Start` macro, *before* the final heating command is called.**
 
 ## Troubleshooting:
-* 
+
+<details>
+    <summary>
+        <b>
+        I'm getting 'gcode_macro BED_MESH_CALIBRATE:gcode': TypeError: bad operand type for abs(): 'Undefined'
+        </b>
+    </summary>
+<p>
+</p>
+This was likely caused by you commenting out a setting in KAMP_Settings.cfg rather than just setting it to false. These checks needs to be in place, so instead of commenting them out, just set them to disabled.
+</details>
 
 ## Credits:
 
