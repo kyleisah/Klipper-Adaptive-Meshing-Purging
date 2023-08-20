@@ -211,6 +211,17 @@ It is required to add `max_extrude_cross_section: 5` to your `[extruder]` config
 <details>
     <summary>
         <b>
+        No matter what, meshes and purges are not adapting!
+        </b>
+    </summary>
+<p>
+</p>
+This happens when Moonraker's object processor is putting exclude object definitions in the wrong spot (AFTER Print_Start rather than before). This is usually fixed if you add M117 before your print_start macro in your slicer's starting gcode. M117 is just a basic "clear display" gcode, but will force the preprocessor to place the definition macros in the correct spot.
+</details>
+
+<details>
+    <summary>
+        <b>
         I'm getting 'gcode_macro BED_MESH_CALIBRATE:gcode': TypeError: bad operand type for abs(): 'Undefined'
         </b>
     </summary>
