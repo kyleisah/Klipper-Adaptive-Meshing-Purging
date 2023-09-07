@@ -171,7 +171,7 @@ The cleanest and easiest way to get started with KAMP is to use Moonraker's Upda
 
 * Using a probe that is not integrated into the printhead (Klicky, Euclid, etc)
   
-  * Usually have special macros that are used to attach and detach the probe as it is needed. 
+  * Usually have special macros that are used to attach and detach the probe specifically for mesh leveling. **Those need to be removed/uncommented from your config or they will cause issues.** We will instead call the docking/undocking macros inside of KAMP.
 
     * `probe_dock_enable:` By default, this setting is `False`. Set this to `True` if your machine has a probe that needs to be attached with a special macro before probing the bed.
 
