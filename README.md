@@ -100,13 +100,13 @@ The cleanest and easiest way to get started with KAMP is to use Moonraker's Upda
 
 2. Open your `moonraker.conf` file and add this configuration:
    ```yaml
-    [update_manager Klipper-Adaptive-Meshing-Purging]
-    type: git_repo
-    channel: dev
-    path: ~/Klipper-Adaptive-Meshing-Purging
-    origin: https://github.com/kyleisah/Klipper-Adaptive-Meshing-Purging.git
-    managed_services: klipper
-    primary_branch: main
+   [update_manager Klipper-Adaptive-Meshing-Purging]
+   type: git_repo
+   channel: dev
+   path: ~/Klipper-Adaptive-Meshing-Purging
+   origin: https://github.com/kyleisah/Klipper-Adaptive-Meshing-Purging.git
+   managed_services: klipper
+   primary_branch: main
     ```
 
     > **Note:**
