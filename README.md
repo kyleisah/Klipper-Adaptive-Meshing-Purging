@@ -112,34 +112,14 @@ The cleanest and easiest way to get started with KAMP is to use Moonraker's Upda
     > **Note:**
     > Whenever Moonraker configurations are changed, it must be restarted for changes to take effect. If you do not want moonraker to notify you of future updates to KAMP, feel free to skip this.
 
-3. Depending on what features you want from KAMP, you'll need to `[include]` some files in your config:
+3. Depending on what features you want from KAMP, you'll need to `[include]` some files in `KAMP_Settings.cfg`:
 
-    ```yaml
-    # This file contains all settings for KAMP, and must be included in printer.cfg with:
+<p align="center">
+<img src="./Photos/Include-Tutorial.gif">
+</p>
 
-    [include KAMP_Settings.cfg]
-
-    ### The following [includes] can be uncommented from within KAMP_Settings.cfg. ###
-
-    # This file enables the use of adaptive meshing.
-
-    [include ./KAMP/Adaptive_Meshing.cfg]
-
-    # This file enables the use of adaptive line purging.
-
-    [include ./KAMP/Line_Purge.cfg]
-
-    # This file enables the use of the adaptive Voron logo purge.
-
-    [include ./KAMP/Voron_Purge.cfg]
-
-    # This file enables the use of KAMP's Smart Park feature.
-
-    [include ./KAMP/Smart_Park.cfg]
-    ```
-
-    >**Note:**
-    The KAMP configuration files are broken up like this to allow those who do not use bed probes to benefit from adaptive purging, and other features.
+  >**Note:**
+  > The KAMP configuration files are broken up like this to allow those who do not use bed probes to benefit from adaptive purging, and other features.
 
 4. After you `[include]` the features you want, be sure to restart your firmware so those inclusions take effect.
 
