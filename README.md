@@ -154,8 +154,8 @@ Depending on what features you want from KAMP, you'll need to `[include]` some f
   ```
 After you `[include]` the features you want, be sure to restart your firmware so those inclusions take effect.
 
-    >**Note:**
-    The KAMP configuration files are broken up like this to allow those who do not use bed probes to benefit from adaptive purging, and other features.
+  >**Note:**
+  The KAMP configuration files are broken up like this to allow those who do not use bed probes to benefit from adaptive purging, and other features.
 
 
 ## Adaptive Meshing:
