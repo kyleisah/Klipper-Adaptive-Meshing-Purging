@@ -123,11 +123,6 @@ The cleanest and easiest way to get started with KAMP is to use Moonraker's Upda
 
 4. After you `[include]` the features you want, be sure to restart your firmware so those inclusions take effect.
 
-<br>
-
----
-
-<br>
 
 ## How to use `KAMP_Settings.cfg`:
 <br>
