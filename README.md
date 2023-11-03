@@ -121,7 +121,7 @@ The cleanest and easiest way to get started with KAMP is to use Moonraker's Upda
   >**Note:**
   > The KAMP configuration files are broken up like this to allow those who do not use bed probes to benefit from adaptive purging, and other features.
 
-4. After you `[include]` the features you want, be sure to restart your firmware so those inclusions take effect.
+4. After you `[include]` the features you want, be sure to restart your firmware so those inclusions take effect. Don't forget to [include] `KAMP_Settings.cfg` to your `printer.cfg`!
 
 
 ## How to use `KAMP_Settings.cfg`:
