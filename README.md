@@ -205,6 +205,17 @@ This happens when Moonraker's object processor is putting exclude object definit
 This was likely caused by you commenting out a setting in KAMP_Settings.cfg rather than just setting it to false. These checks needs to be in place, so instead of commenting them out, just set them to disabled.
 </details>
 
+<details>
+  <summary>
+    <b>
+      Purging is not working
+    </b>
+  </summary>
+  <p>
+  </p>
+  You need to call the VORON_PURGE or LINE_PURGE macros as part of your <em>print_start</em> macro.
+</details>
+
 ## Credits:
 
 KAMP was not a one man effort, it was made possible with help from fine folks such as:
