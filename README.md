@@ -62,14 +62,14 @@
 
 1. You will need `[exclude_object]` defined in `printer.cfg`.
 
-2. You will also need to make sure the following is defined in `moonraker.conf`:
+3. You will also need to make sure the following is defined in `moonraker.conf`:
   
     ```yaml
     [file_manager]
     enable_object_processing: True
 
     ```
-3. Finally, you will need to make sure your slicer is labeling objects:
+4. Finally, you will need to make sure your slicer is labeling objects:
 
 <p align="center">
 <img src="./Photos/Meshing-Assets/slicer-setting.png" width="500">
@@ -203,6 +203,16 @@ This happens when Moonraker's object processor is putting exclude object definit
 <p>
 </p>
 This was likely caused by you commenting out a setting in KAMP_Settings.cfg rather than just setting it to false. These checks needs to be in place, so instead of commenting them out, just set them to disabled.
+</details>
+<details>
+  <summary>
+    <b>
+      I'm getting 'Internal error on command:_BED_MESH_CALIBRATE'
+    </b>
+  </summary>
+  <p>
+  </p>
+  In your <em>printer.cfg</em> file under the <em>[bed_mesh]</em> section, remove <em>algorithm</em> and <em>probe_count</em> lines, KAMP will inject those at runtime.
 </details>
 
 ## Credits:
