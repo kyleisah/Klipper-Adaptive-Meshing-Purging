@@ -213,7 +213,7 @@ This was likely caused by you commenting out a setting in KAMP_Settings.cfg rath
   </summary>
   <p>
   </p>
-  You need to call the purging macros ( `LINE_PURGE` or `VORON_PURGE` ) either in your slicer start gcode, or as part of your `PRINT_START` macro. Be sure to place these macros at the end, so it is called right before the print starts, and the nozzle has been fully heated.
+  You need to call the purging macros ( LINE_PURGE or VORON_PURGE ) either in your slicer start gcode, or as part of your PRINT_START macro. Be sure to place these macros at the end, so it is called right before the print starts, and the nozzle has been fully heated.
 </details>
 
 ## Credits:
