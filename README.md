@@ -208,12 +208,12 @@ This was likely caused by you commenting out a setting in KAMP_Settings.cfg rath
 <details>
   <summary>
     <b>
-      Purging is not working
+      Purging is not working!
     </b>
   </summary>
   <p>
   </p>
-  You need to call the VORON_PURGE or LINE_PURGE macros as part of your <em>print_start</em> macro.
+  You need to call the purging macros ( `LINE_PURGE` or `VORON_PURGE` ) either in your slicer start gcode, or as part of your `PRINT_START` macro. Be sure to place these macros at the end, so it is called right before the print starts, and the nozzle has been fully heated.
 </details>
 
 ## Credits:
