@@ -221,7 +221,7 @@ This was likely caused by you commenting out a setting in KAMP_Settings.cfg rath
 KAMP was not a one man effort, it was made possible with help from fine folks such as:
 - [MapleLeafMakers](https://github.com/MapleLeafMakers) - for assisting in the inception of this project.
 - [Julian Schill](https://github.com/julianschill) - A true code warrior and jinja ninja.
-- [KageUrufu](https://github.com/kageurufu) - For spearheading object cancellation in Klipper, and helping make this possible.
+- [frank.af](https://github.com/kageurufu) - For spearheading object cancellation in Klipper, and helping make this possible.
 - [Le0n](https://github.com/leanghoun) - For the fantastic KAMP artwork.
 - [Yenda](https://github.com/jtrmal) - For bringing KAMP into the realm of Moonraker's Update Manager.
 
