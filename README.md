@@ -123,6 +123,29 @@ The cleanest and easiest way to get started with KAMP is to use Moonraker's Upda
 
 4. After you `[include]` the features you want, be sure to restart your firmware so those inclusions take effect. Don't forget to add `[include KAMP_Settings.cfg]` to your `printer.cfg`!
 
+### Optional per-object mesh helper
+
+KAMP can now try a per-object mesh path before falling back to the original global adaptive rectangle. This is useful for plates with separated objects, such as two small cubes on opposite bed corners, where a single bounding rectangle would probe the empty space between them.
+
+To enable it:
+
+1. Install the Klipper extra on the printer host:
+   ```bash
+   ln -s ~/Klipper-Adaptive-Meshing-Purging/Klipper_Extras/kamp_object_mesh.py ~/klipper/klippy/extras/kamp_object_mesh.py
+   ```
+
+2. In `KAMP_Settings.cfg`, include both files:
+   ```ini
+   [include ./KAMP/Adaptive_Meshing.cfg]
+   [include ./KAMP/Object_Meshing.cfg]
+   ```
+
+3. Restart Klipper.
+
+If `Object_Meshing.cfg` is not included and the helper is not loaded in the running Klipper config, KAMP uses the existing global adaptive mesh behavior. If the helper is loaded but object polygons are missing, the printer uses a round bed mesh, `faulty_region_*` substitution is configured, or `METHOD=rapid_scan` is requested, the helper falls back through `_BED_MESH_CALIBRATE`.
+
+This is intended for rectangular bed mesh setups with slicer/Moonraker `EXCLUDE_OBJECT_DEFINE` entries that include `POLYGON` data. It can create separate regions for any number of objects, but each object region is still rectangular around that object's polygon.
+
 
 ## How to use `KAMP_Settings.cfg`:
 <br>
@@ -141,6 +164,8 @@ The cleanest and easiest way to get started with KAMP is to use Moonraker's Upda
     * `mesh_margin:` This is the amount of space in millimeters **beyond** your print area to further increase the size of the adapted mesh. Rather than a mesh starting at `X50 Y50`, if `Mesh_Margin` is set to `10`, the mesh will be stretched, and the new mesh bounds will start at `X40 Y40` instead. This can be useful for those who commonly use brims when printing. By default, this value is 0.
 
     * `fuzz_amount:` This is the **maximum** amount that the mesh bounds can be increased in millimeters *by random*. This setting is really only intended for those who use a nozzle-based probe like a strain gauge or Voron Tap. This will slightly randomize the bounds of the bed mesh which will help to spread out wear on your print surface when printing multiples of the same print job (several plates of similar size). By default, this value is 0. **Maximum** `fuzz_amount` recommended is `3`.
+
+    * `object_mesh_enable:` When `True`, `Object_Meshing.cfg` is included, and the Klipper extra is installed, KAMP probes each `exclude_object` polygon as its own object region. This avoids turning far-apart objects into one large rectangular probe area. The normal KAMP global adaptive mesh remains the fallback.
 
 <br>
 
@@ -234,6 +259,3 @@ KAMP was not a one man effort, it was made possible with help from fine folks su
 - [Takuya's Tools](http://tools.takuya.wtf/index.html) A collection of handy tools for any Klipper user.
 
 ---
-
-
-
