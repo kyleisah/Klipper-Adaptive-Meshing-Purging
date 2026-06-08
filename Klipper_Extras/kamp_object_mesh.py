@@ -403,10 +403,13 @@ class KampObjectMesh:
         return points, point_map
 
     def _probe_finalize(self, *args):
+        probe_z_offset = 0.0
         if len(args) == 1:
             positions = args[0]
         elif len(args) == 2:
-            _offsets, positions = args
+            probe_offsets, positions = args
+            if len(probe_offsets) >= 3:
+                probe_z_offset = probe_offsets[2]
         else:
             raise self.gcode.error(
                 "KAMP object mesh: invalid finalize callback argument count"
@@ -418,7 +421,7 @@ class KampObjectMesh:
             )
         zero_probe_z = None
         for probed, mapping in zip(positions, self.pending_point_map):
-            probed_z = self._get_probed_z(probed)
+            probed_z = self._get_probed_z(probed, probe_z_offset)
             region_index, y_index, x_index = mapping
             if region_index == "zero_ref":
                 zero_probe_z = probed_z
@@ -461,10 +464,10 @@ class KampObjectMesh:
             % (len(self.pending_regions), len(self.pending_point_map))
         )
 
-    def _get_probed_z(self, probed):
+    def _get_probed_z(self, probed, probe_z_offset):
         if hasattr(probed, "bed_z"):
             return probed.bed_z
-        return probed[2]
+        return probed[2] - probe_z_offset
 
     def _region_status(self, regions):
         return [
