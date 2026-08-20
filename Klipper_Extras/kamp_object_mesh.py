@@ -408,7 +408,7 @@ class KampObjectMesh:
             "algo": algorithm,
         })
         return {
-            "name": obj.get("name", "OBJECT"),
+            "name": name,
             "polygon": polygon,
             "bounds": (min_x, min_y, max_x, max_y),
             "area": (max_x - min_x) * (max_y - min_y),
