@@ -40,13 +40,23 @@ class KampCompositeMesh:
         min_y = min(r["bounds"][1] for r in regions)
         max_x = max(r["bounds"][2] for r in regions)
         max_y = max(r["bounds"][3] for r in regions)
+        x_spacing = min(
+            (r["bounds"][2] - r["bounds"][0]) / (r["x_count"] - 1)
+            for r in regions
+        )
+        y_spacing = min(
+            (r["bounds"][3] - r["bounds"][1]) / (r["y_count"] - 1)
+            for r in regions
+        )
+        x_count = int(math.ceil((max_x - min_x) / x_spacing)) + 1
+        y_count = int(math.ceil((max_y - min_y) / y_spacing)) + 1
         self.mesh_params = {
             "min_x": min_x,
             "max_x": max_x,
             "min_y": min_y,
             "max_y": max_y,
-            "x_count": max(r["x_count"] for r in regions),
-            "y_count": max(r["y_count"] for r in regions),
+            "x_count": max(x_count, 3),
+            "y_count": max(y_count, 3),
             "mesh_x_pps": regions[0]["params"]["mesh_x_pps"],
             "mesh_y_pps": regions[0]["params"]["mesh_y_pps"],
             "algo": "object_composite",
@@ -60,16 +70,33 @@ class KampCompositeMesh:
         return self.mesh_params
 
     def get_probed_matrix(self):
-        rows = []
-        for region in self.regions:
-            rows.extend(region["mesh"].get_probed_matrix())
-        return rows or [[]]
+        return self._build_sample_matrix(
+            self.mesh_params["x_count"], self.mesh_params["y_count"]
+        )
 
     def get_mesh_matrix(self):
-        rows = []
-        for region in self.regions:
-            rows.extend(region["mesh"].get_mesh_matrix())
-        return rows or [[]]
+        x_pps = self.mesh_params["mesh_x_pps"]
+        y_pps = self.mesh_params["mesh_y_pps"]
+        x_count = (self.mesh_params["x_count"] - 1) * (x_pps + 1) + 1
+        y_count = (self.mesh_params["y_count"] - 1) * (y_pps + 1) + 1
+        return self._build_sample_matrix(x_count, y_count)
+
+    def _build_sample_matrix(self, x_count, y_count):
+        min_x = self.mesh_params["min_x"]
+        max_x = self.mesh_params["max_x"]
+        min_y = self.mesh_params["min_y"]
+        max_y = self.mesh_params["max_y"]
+        x_step = (max_x - min_x) / (x_count - 1)
+        y_step = (max_y - min_y) / (y_count - 1)
+        matrix = []
+        for y_index in range(y_count):
+            y = min_y + y_step * y_index
+            row = []
+            for x_index in range(x_count):
+                x = min_x + x_step * x_index
+                row.append(self.calc_z(x, y))
+            matrix.append(row)
+        return matrix
 
     def set_mesh_offsets(self, offsets):
         for i, offset in enumerate(offsets):
@@ -176,6 +203,8 @@ class KampObjectMesh:
         self.pending_regions = []
         self.pending_point_map = []
         self.pending_zero_ref = None
+        self._profile_save_guard_installed = False
+        self._orig_save_profile = None
         self.probe_helper = probe.ProbePointsHelper(
             config, self._probe_finalize, []
         )
@@ -192,26 +221,59 @@ class KampObjectMesh:
     def cmd_KAMP_OBJECT_MESH_CALIBRATE(self, gcmd):
         try:
             points = self._prepare_object_regions(gcmd)
+            self.probe_helper.update_probe_points(points, 3)
         except Exception as exc:
             self._run_stock_fallback(gcmd, str(exc))
             return
+        bedmesh = self._lookup_bed_mesh()
+        bedmesh.set_mesh(None)
+        self.last_status = {
+            "active": True,
+            "mode": "object",
+            "regions": self._region_status(self.pending_regions),
+            "fallback_reason": None,
+        }
         try:
-            self.probe_helper.update_probe_points(points, 3)
-            self.last_status = {
-                "active": True,
-                "mode": "object",
-                "regions": self._region_status(self.pending_regions),
-                "fallback_reason": None,
-            }
             self.probe_helper.start_probe(gcmd)
-        except Exception as exc:
-            self._run_stock_fallback(gcmd, str(exc))
+        except Exception:
+            self.last_status["active"] = False
+            raise
 
     def _lookup_bed_mesh(self):
         bedmesh = self.printer.lookup_object("bed_mesh", None)
         if bedmesh is None:
             raise KampObjectMeshError("[bed_mesh] is not loaded")
+        self._install_profile_save_guard(bedmesh)
+        self._sync_probe_helper_from_bed_mesh(bedmesh)
         return bedmesh
+
+    def _install_profile_save_guard(self, bedmesh):
+        if self._profile_save_guard_installed or not hasattr(bedmesh, "pmgr"):
+            return
+        self._orig_save_profile = bedmesh.pmgr.save_profile
+
+        def save_profile_guard(prof_name):
+            z_mesh = bedmesh.get_mesh()
+            if isinstance(z_mesh, KampCompositeMesh):
+                raise self.gcode.error(
+                    "BED_MESH_PROFILE SAVE is not supported for a KAMP "
+                    "object composite mesh. Run BED_MESH_CALIBRATE or "
+                    "BED_MESH_CLEAR before saving a persistent profile."
+                )
+            return self._orig_save_profile(prof_name)
+
+        bedmesh.pmgr.save_profile = save_profile_guard
+        bedmesh.save_profile = save_profile_guard
+        self._profile_save_guard_installed = True
+
+    def _sync_probe_helper_from_bed_mesh(self, bedmesh):
+        bed_probe_helper = getattr(bedmesh.bmc.probe_mgr, "probe_helper", None)
+        if bed_probe_helper is None:
+            return
+        self.probe_helper.default_horizontal_move_z = (
+            bed_probe_helper.default_horizontal_move_z
+        )
+        self.probe_helper.speed = bed_probe_helper.speed
 
     def _get_objects(self):
         exclude_object = self.printer.lookup_object("exclude_object", None)
@@ -254,15 +316,21 @@ class KampObjectMesh:
         max_y_distance = (bed_max[1] - bed_min[1]) / (full_counts[1] - 1)
 
         regions = []
-        points = []
-        point_map = []
         for obj in objects:
             region = self._object_to_region(
                 obj, margin, fuzz_amount, bed_min, bed_max,
                 max_x_distance, max_y_distance, bmc.mesh_config
             )
-            region_index = len(regions)
             regions.append(region)
+        regions = self._merge_overlapping_regions(
+            regions, bed_min, bed_max, max_x_distance, max_y_distance,
+            bmc.mesh_config
+        )
+
+        points = []
+        point_map = []
+        for region_index, region in enumerate(regions):
+            region["index"] = region_index
             region_points, region_map = self._generate_region_points(
                 region, region_index
             )
@@ -319,6 +387,16 @@ class KampObjectMesh:
             max_x_distance, max_y_distance,
             mesh_config["x_count"], mesh_config["y_count"]
         )
+        return self._region_from_bounds(
+            obj.get("name", "OBJECT"), polygon,
+            (min_x, min_y, max_x, max_y), x_count, y_count, algorithm,
+            mesh_config
+        )
+
+    def _region_from_bounds(
+        self, name, polygon, bounds, x_count, y_count, algorithm, mesh_config
+    ):
+        min_x, min_y, max_x, max_y = bounds
         params = dict(mesh_config)
         params.update({
             "min_x": min_x,
@@ -339,6 +417,68 @@ class KampObjectMesh:
             "params": params,
             "matrix": [[None for _ in range(x_count)]
                        for _ in range(y_count)],
+        }
+
+    def _merge_overlapping_regions(
+        self, regions, bed_min, bed_max, max_x_distance, max_y_distance,
+        mesh_config
+    ):
+        merged = []
+        for region in regions:
+            pending = dict(region)
+            pending["names"] = [region["name"]]
+            pending["polygons"] = [region["polygon"]]
+            index = 0
+            while index < len(merged):
+                other = merged[index]
+                if not self._bounds_overlap(pending["bounds"], other["bounds"]):
+                    index += 1
+                    continue
+                pending = self._merge_region_pair(pending, other)
+                del merged[index]
+                index = 0
+            merged.append(pending)
+        if len(merged) == len(regions):
+            return regions
+        result = []
+        for region in merged:
+            min_x, min_y, max_x, max_y = region["bounds"]
+            x_count, y_count, algorithm = self._probe_counts_for_region(
+                min_x, min_y, max_x, max_y,
+                max_x_distance, max_y_distance,
+                mesh_config["x_count"], mesh_config["y_count"]
+            )
+            result.append(self._region_from_bounds(
+                "+".join(region["names"]),
+                [point for polygon in region["polygons"] for point in polygon],
+                region["bounds"], x_count, y_count, algorithm, mesh_config
+            ))
+        logging.info(
+            "KAMP object mesh merged %d overlapping object regions into %d",
+            len(regions), len(result)
+        )
+        return result
+
+    def _bounds_overlap(self, first, second):
+        return (
+            first[0] <= second[2] and first[2] >= second[0]
+            and first[1] <= second[3] and first[3] >= second[1]
+        )
+
+    def _merge_region_pair(self, first, second):
+        bounds = (
+            min(first["bounds"][0], second["bounds"][0]),
+            min(first["bounds"][1], second["bounds"][1]),
+            max(first["bounds"][2], second["bounds"][2]),
+            max(first["bounds"][3], second["bounds"][3]),
+        )
+        return {
+            "name": "+".join(first["names"] + second["names"]),
+            "names": first["names"] + second["names"],
+            "polygon": first["polygon"] + second["polygon"],
+            "polygons": first["polygons"] + second["polygons"],
+            "bounds": bounds,
+            "area": (bounds[2] - bounds[0]) * (bounds[3] - bounds[1]),
         }
 
     def _expand_span(self, lower, upper, bed_lower, bed_upper):
