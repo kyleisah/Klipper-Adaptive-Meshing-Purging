@@ -221,10 +221,19 @@ class KampObjectMesh:
     def cmd_KAMP_OBJECT_MESH_CALIBRATE(self, gcmd):
         try:
             points = self._prepare_object_regions(gcmd)
-            self.probe_helper.update_probe_points(points, 3)
-        except Exception as exc:
+        except KampObjectMeshError as exc:
             self._run_stock_fallback(gcmd, str(exc))
             return
+        if gcmd.get_int("DRY_RUN", 0):
+            self.last_status = {
+                "active": False,
+                "mode": "dry_run",
+                "regions": self._region_status(self.pending_regions),
+                "fallback_reason": None,
+            }
+            self._respond_region_summary(gcmd, points)
+            return
+        self.probe_helper.update_probe_points(points, 3)
         bedmesh = self._lookup_bed_mesh()
         bedmesh.set_mesh(None)
         self.last_status = {
@@ -354,7 +363,42 @@ class KampObjectMesh:
             "KAMP object mesh prepared %d regions and %d probe points",
             len(regions), len(points)
         )
+        for region in regions:
+            logging.info(
+                "KAMP object mesh region %s bounds %.3f,%.3f -> "
+                "%.3f,%.3f probe_count=%d,%d algorithm=%s",
+                region["name"],
+                region["bounds"][0],
+                region["bounds"][1],
+                region["bounds"][2],
+                region["bounds"][3],
+                region["x_count"],
+                region["y_count"],
+                region["params"]["algo"],
+            )
         return points
+
+    def _respond_region_summary(self, gcmd, points):
+        lines = [
+            "KAMP object mesh dry run: %d regions, %d probe points"
+            % (len(self.pending_regions), len(points))
+        ]
+        for region in self.pending_regions:
+            lines.append(
+                "%s: bounds %.3f,%.3f -> %.3f,%.3f; "
+                "probe_count=%d,%d; algorithm=%s"
+                % (
+                    region["name"],
+                    region["bounds"][0],
+                    region["bounds"][1],
+                    region["bounds"][2],
+                    region["bounds"][3],
+                    region["x_count"],
+                    region["y_count"],
+                    region["params"]["algo"],
+                )
+            )
+        gcmd.respond_info("\n".join(lines))
 
     def _object_to_region(
         self, obj, margin, fuzz_amount, bed_min, bed_max,
@@ -615,6 +659,7 @@ class KampObjectMesh:
                 "name": region["name"],
                 "bounds": region["bounds"],
                 "probe_count": (region["x_count"], region["y_count"]),
+                "point_count": region["x_count"] * region["y_count"],
                 "algorithm": region["params"]["algo"],
             }
             for region in regions
